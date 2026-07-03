@@ -58,7 +58,7 @@ The central question is whether improving the variational state structure can ap
 
 \section{Provenance and Scope}
 
-The original Ahsan Kagome-VQE material is used as provenance and methodology context, not as code copied into this workflow.  In particular, it provides the source cross-check for the 19-site Kagome connectivity, context for hardware-efficient Qiskit VQE experiments, and the calibrated-Hamiltonian or defect-triangle strategy described in Ref.~\cite{ahsan2025}.  The present proof-of-concept instead develops a separate no-calibration route based on signed weighted-RVB initialization and shallow edge-colored Heisenberg-HVA refinement.
+The original Ahsan Kagome-VQE material is used as provenance and methodology context, not as code copied into this workflow.  In particular, it provides the source cross-check for the 19-site Kagome connectivity, context for hardware-efficient Qiskit VQE experiments, and the calibrated-Hamiltonian or defect-triangle strategy described in Ref.~\cite{ahsan2026}.  The present proof-of-concept instead develops a separate no-calibration route based on signed weighted-RVB initialization and shallow edge-colored Heisenberg-HVA refinement.
 
 \begin{table}[H]
 \centering
@@ -78,7 +78,7 @@ ODR / IBM Runtime ideas & Future hardware and noise-mitigation extension. \\
 \end{tabular}
 \end{table}
 
-When discussing the original calibrated-Hamiltonian direction, we use cautious language: defect or triangle couplings are increased above the uniform value, with reported calibrated values depending on the patch, Hamiltonian convention, defect set, and scan.  In the Ahsan workflow this idea appears as defect-triangle Hamiltonian engineering with selected bonds near $J'\approx 2$ and a hardware-efficient RealAmplitudes-style VQE circuit \cite{ahsan2025}.  This report states precise calibration values only for scans reproduced in the current repository.
+When discussing the original calibrated-Hamiltonian direction, we use cautious language: defect or triangle couplings are increased above the uniform value, with reported calibrated values depending on the patch, Hamiltonian convention, defect set, and scan.  In the Ahsan workflow this idea appears as defect-triangle Hamiltonian engineering with selected bonds near $J'\approx 2$ and a hardware-efficient RealAmplitudes-style VQE circuit \cite{ahsan2026}.  This report states precise calibration values only for scans reproduced in the current repository.
 
 \section{Model and Benchmark}
 
@@ -102,7 +102,7 @@ The sector dimension is
 \[
 \dim\mathcal{H}_{n_\downarrow=9} = \binom{19}{9}=92{,}378.
 \]
-In the rounded convention used in the Ahsan calibration table, the corresponding 19-site value appears as approximately $-29.14$ \cite{ahsan2025}.
+In the rounded convention used in the Ahsan calibration table, the corresponding 19-site value appears as approximately $-29.14$ \cite{ahsan2026}.
 All reported fidelities use
 \begin{equation}
 F(\psi)=|\langle \psi_{\rm exact}|\psi\rangle|^2.
@@ -426,6 +426,7 @@ E=\hvaE,\quad F=\hvaF,
 with an energy error of $0.10856676$ relative to the exact benchmark.  The result is strong enough to motivate deeper or more expressive Heisenberg-level ansatz work, but the present evidence remains finite-size and does not claim scalable hardware QSL preparation.
 
 \begin{thebibliography}{9}
+\raggedright
 
 \bibitem{yan2011}
 S. Yan, D. A. Huse, and S. R. White,
@@ -458,10 +459,10 @@ Qiskit Community,
 ``Qiskit: An open-source framework for quantum computing,''
 Zenodo, doi:10.5281/zenodo.2562110 (2017).
 
-\bibitem{ahsan2025}
+\bibitem{ahsan2026}
 M. Ahsan,
-``Utility-scale quantum computation of ground-state energy in a 100+ site planar kagome antiferromagnet via Hamiltonian engineering,''
-arXiv:2507.06361v3 (2025).
+``Utility-scale Experimental Quantum Computation with Hardware Efficient Ans\"{a}tze and Calibrated Hamiltonian,''
+\emph{ACM Transactions on Quantum Computing} (2026), doi:10.1145/3815786.
 
 \end{thebibliography}
 

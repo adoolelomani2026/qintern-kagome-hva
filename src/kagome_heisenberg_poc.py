@@ -33,9 +33,9 @@ LITERATURE_REFERENCES = {
         "citation": "Depenbrock, McCulloch, and Schollwoeck, PRL 109, 067201 (2012)",
         "arxiv": "1205.4858",
     },
-    "ahsan2025": {
-        "citation": "Ahsan, arXiv:2507.06361v3 (2025)",
-        "arxiv": "2507.06361v3",
+    "ahsan2026": {
+        "citation": "Ahsan, ACM Transactions on Quantum Computing, doi:10.1145/3815786 (2026)",
+        "doi": "10.1145/3815786",
     },
 }
 
@@ -1243,7 +1243,7 @@ def literature_benchmark_row(
     physical_per_site = physical_energy / float(num_sites)
     dmrg_per_site = DEPENBROCK_DMRG_PHYSICAL_ENERGY_PER_SITE
     return {
-        "reference": "Depenbrock2012 thermodynamic DMRG / Ahsan2025 rounded 19-site calibration",
+        "reference": "Depenbrock2012 thermodynamic DMRG / Ahsan2026 rounded 19-site calibration",
         "energy_unscaled_pauli": float(energy_unscaled_pauli),
         "energy_physical_spin": physical_energy,
         "energy_physical_per_site": physical_per_site,

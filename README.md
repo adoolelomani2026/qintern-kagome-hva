@@ -26,6 +26,10 @@ replacement for Hamiltonian calibration.
 Project context: QIntern 2026 project `qi26_09`, mentored by Dr. Muhammad
 Ahsan through QWorld Association, QResearch Department.
 
+Ahsan reference: M. Ahsan, "Utility-scale Experimental Quantum Computation with
+Hardware Efficient Ansatze and Calibrated Hamiltonian," ACM Transactions on
+Quantum Computing (2026), doi:10.1145/3815786.
+
 ## Provenance And Scope
 
 The original Ahsan Kagome-VQE material is used here as provenance and
