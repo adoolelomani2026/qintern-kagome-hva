@@ -272,7 +272,11 @@ def plot_calibration_scatter(final_rows: list[dict[str, str]], output: Path, *, 
     ]
     if not calibration:
         return
-    p2 = next(row for row in final_rows if row["state"] == "Weighted RVB + HVA p=2")
+    hva_rows = [row for row in final_rows if row["state"].startswith("Weighted RVB + HVA p=")]
+    if not hva_rows:
+        return
+    best_hva = min(hva_rows, key=lambda row: abs(float(row["error_vs_exact"])))
+    best_hva_depth = int(best_hva["depth"])
     fig, ax = plt.subplots(figsize=(5.5, 3.8))
     styles = {
         "group": ("o", "#4c78a8"),
@@ -292,12 +296,12 @@ def plot_calibration_scatter(final_rows: list[dict[str, str]], output: Path, *, 
             edgecolors="none",
         )
     ax.scatter(
-        [abs(float(p2["error_vs_exact"]))],
-        [float(p2["fidelity"])],
+        [abs(float(best_hva["error_vs_exact"]))],
+        [float(best_hva["fidelity"])],
         marker="*",
         s=180,
         color="#d62728",
-        label="Weighted RVB + HVA p=2",
+        label=f"Weighted RVB + HVA p={best_hva_depth}",
         zorder=4,
     )
     best = min(calibration, key=lambda row: abs(float(row["target_energy_error"])))

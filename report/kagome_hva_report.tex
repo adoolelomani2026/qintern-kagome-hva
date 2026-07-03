@@ -14,6 +14,7 @@
 \graphicspath{{../figures/}}
 \setlength{\parskip}{0.5em}
 \setlength{\parindent}{0em}
+\renewcommand{\labelitemi}{\textnormal{-}}
 
 \newcommand{\pauliH}{XX+YY+ZZ}
 \newcommand{\exactE}{-29.146168109350}
@@ -26,14 +27,17 @@
 for a 19-Site Kagome Antiferromagnetic Heisenberg Benchmark}}
 \author{Adel H. Al-Yoorby\\
 QIntern 2026 Project qi26\_09\\
-Mentor context: Dr. Muhammad Ahsan, QWorld Association, QResearch Department}
+Project context: Dr. Muhammad Ahsan\\
+QWorld Association, QResearch Department}
 \date{July 2026}
 
 \begin{document}
 \maketitle
 
 \begin{abstract}
-We present a finite-size proof-of-concept for preparing low-energy states of a 19-site Kagome antiferromagnetic Heisenberg model using a signed weighted resonating-valence-bond (RVB) initializer followed by shallow edge-colored Heisenberg Hamiltonian variational ansatz (HVA) layers.  The model is benchmarked by exact sparse diagonalization in the fixed-$S^z$ sector with $n_\downarrow=9$ and Hilbert-space dimension $\binom{19}{9}=92378$.  A static 9-singlet product state gives energy $E=-27.000000$ and fidelity $F=0.014241$ against the exact ground state.  Optimizing signed amplitudes over 54 maximum dimer coverings improves this to $E=\rvbE$ and $F=\rvbF$.  A no-calibration, edge-colored Heisenberg-HVA refinement reaches $E=\hvaE$ and $F=\hvaF$ at depth $p=4$, closing $94.94\%$ of the static-dimer-to-exact energy gap.  Exact calibrated-Hamiltonian reference scans can reach closer finite-size states, with the best reproduced triangle perturbation giving error $3.70\times 10^{-5}$ and fidelity $0.999966$.  The result should therefore be interpreted as a strong no-calibration circuit-refinement baseline and not as a scalable or hardware-ready proof of quantum spin liquid preparation.
+We present a finite-size proof-of-concept for preparing low-energy states of a 19-site Kagome antiferromagnetic Heisenberg model using a signed weighted resonating-valence-bond (RVB) initializer followed by shallow edge-colored Heisenberg-HVA layers.  The model is benchmarked by exact sparse diagonalization in the fixed-$S^z$ sector with $n_\downarrow=9$ and Hilbert-space dimension $92{,}378$.
+
+A static 9-singlet product state gives energy $E=-27.000000$ and fidelity $F=0.014241$ against the exact ground state.  Optimizing signed amplitudes over 54 maximum dimer coverings improves this to $E=\rvbE$ and $F=\rvbF$.  A no-calibration, edge-colored Heisenberg-HVA refinement reaches $E=\hvaE$ and $F=\hvaF$ at depth $p=4$, closing $94.94\%$ of the static-dimer-to-exact energy gap.  Exact calibrated-Hamiltonian reference scans can reach closer finite-size states, with the best reproduced triangle perturbation giving error $3.70\times 10^{-5}$ and fidelity $0.999966$.  The result should therefore be interpreted as a strong no-calibration circuit-refinement baseline and not as a scalable or hardware-ready proof of quantum spin liquid preparation.
 \end{abstract}
 
 \section{Introduction}
@@ -60,7 +64,7 @@ The original Ahsan Kagome-VQE material is used as provenance and methodology con
 \centering
 \caption{Role of each component in the final project narrative.}
 \label{tab:component_roles}
-\begin{tabular}{p{0.33\textwidth}p{0.57\textwidth}}
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.33\textwidth}>{\raggedright\arraybackslash}p{0.57\textwidth}}
 \toprule
 Component & Role \\
 \midrule
@@ -93,6 +97,10 @@ H_{\rm phys} = \sum_{\langle i,j\rangle} \mathbf{S}_i\cdot\mathbf{S}_j
 The exact reference is the lowest eigenstate in the $n_\downarrow=9$ fixed-$S^z$ sector:
 \[
 E_0 = \exactE.
+\]
+The sector dimension is
+\[
+\dim\mathcal{H}_{n_\downarrow=9} = \binom{19}{9}=92{,}378.
 \]
 In the rounded convention used in the Ahsan calibration table, the corresponding 19-site value appears as approximately $-29.14$ \cite{ahsan2025}.
 All reported fidelities use
@@ -330,11 +338,11 @@ The no-calibration HVA result should be compared honestly against exact calibrat
 
 \begin{table}[H]
 \centering
-\caption{No-calibration HVA compared with reproduced calibrated-Hamiltonian exact references.}
+\caption{No-calibration HVA compared with reproduced calibrated-Hamiltonian exact reference states.  Calibrated rows are exact ground states of modified Hamiltonians evaluated against the original target Hamiltonian.}
 \label{tab:calibration}
 \begin{tabular}{lrr}
 \toprule
-Method & Energy error & Fidelity \\
+Method / reference state & Energy error & Fidelity \\
 \midrule
 Weighted RVB + HVA $p=4$ & 0.108567 & 0.982518 \\
 Calibrated group color1, $J'=1.02$ & 0.003945 & 0.994967 \\
