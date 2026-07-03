@@ -40,7 +40,7 @@ The roles are:
 
 | Component | Role |
 | --- | --- |
-| Ahsan Kagome-VQE folder | Original calibrated-Hamiltonian/VQE provenance |
+| External Ahsan Kagome-VQE material | Original calibrated-Hamiltonian/VQE provenance |
 | 19-site bond list | Confirmed against Ahsan's notebook |
 | Weighted RVB | Main physics initializer and insight |
 | Heisenberg-HVA | No-calibration circuit-refinement path |
@@ -53,9 +53,8 @@ with reported calibrated values depending on the patch, Hamiltonian convention,
 defect set, and scan. The current repository reports exact values only for the
 calibration scans reproduced in `results/19site_calibration_scan.csv`.
 
-If `Kagome-Lattice-VQE-main.zip` is distributed with this package, it is a
-standalone provenance archive only; none of the reproduction scripts import it
-or require it.
+The Ahsan archive itself is not included in this repository; none of the
+reproduction scripts import it or require it.
 
 ## Install
 
