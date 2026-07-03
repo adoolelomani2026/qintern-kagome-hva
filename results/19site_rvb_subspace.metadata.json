@@ -1,0 +1,26 @@
+{
+  "command": "python.exe scripts/run_19site_rvb_subspace.py --coverings 54 --checkpoints 1,2,8,12,16,24,32,54 --covering-mode deterministic",
+  "seed": 123,
+  "covering_mode": "deterministic",
+  "coverings_requested": 54,
+  "coverings_generated": 54,
+  "checkpoints": [
+    1,
+    2,
+    8,
+    12,
+    16,
+    24,
+    32,
+    54
+  ],
+  "reference_energy": -29.146168109350135,
+  "pauli_scale": 1.0,
+  "hamiltonian_convention": "unscaled Pauli: sum_<ij>(XX+YY+ZZ)",
+  "singlet_orientation": "|s_ij>=(|0_i 1_j>-|1_i 0_j>)/sqrt(2), with i<j",
+  "overlap_threshold": 1e-10,
+  "bond_file": "data/19site_bonds.csv",
+  "created_at": "2026-07-01T11:34:45",
+  "python_version": "3.14.3",
+  "numpy_version": "2.4.3"
+}

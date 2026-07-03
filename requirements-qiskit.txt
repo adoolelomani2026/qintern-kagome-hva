@@ -1,0 +1,4 @@
+qiskit==2.4.1
+qiskit-aer==0.17.2
+jupyter==1.1.1
+notebook==7.5.7

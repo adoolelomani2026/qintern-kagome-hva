@@ -1,0 +1,353 @@
+from __future__ import annotations
+
+import csv
+import math
+import sys
+from pathlib import Path
+
+import matplotlib
+
+matplotlib.use("Agg")
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(PROJECT_ROOT / "src"))
+
+from kagome_heisenberg_poc import load_bonds_csv  # noqa: E402
+
+
+NUM_SITES = 19
+
+
+STATE_TO_FIGURE = {
+    "static_dimer": "bond_map_static_dimer.png",
+    "equal_rvb_54": "bond_map_equal_rvb.png",
+    "weighted_rvb_54": "bond_map_weighted_rvb.png",
+    "weighted_hva_p1": "bond_map_weighted_hva_p1.png",
+    "weighted_hva_p2": "bond_map_weighted_hva_p2.png",
+    "weighted_hva_p3": "bond_map_weighted_hva_p3.png",
+    "weighted_hva_p4": "bond_map_weighted_hva_p4.png",
+    "exact": "bond_map_exact.png",
+}
+
+
+def read_csv_rows(path: Path) -> list[dict[str, str]]:
+    with path.open(newline="") as handle:
+        return list(csv.DictReader(handle))
+
+
+def force_layout(
+    num_sites: int,
+    bonds: list[tuple[int, int]],
+    iterations: int = 450,
+    seed: int = 19,
+) -> np.ndarray:
+    rng = np.random.default_rng(seed)
+    angles = np.linspace(0, 2 * np.pi, num_sites, endpoint=False)
+    positions = np.column_stack([np.cos(angles), np.sin(angles)])
+    positions += 0.05 * rng.normal(size=positions.shape)
+    edges = np.asarray(bonds, dtype=int)
+    area = 4.0
+    k = math.sqrt(area / num_sites)
+    temperature = 0.18
+    for step in range(iterations):
+        disp = np.zeros_like(positions)
+        for i in range(num_sites):
+            delta = positions[i] - positions
+            dist = np.linalg.norm(delta, axis=1) + 1e-9
+            force = (k * k / dist**2)[:, None] * delta
+            disp[i] += np.sum(force, axis=0)
+        for i, j in edges:
+            delta = positions[i] - positions[j]
+            dist = np.linalg.norm(delta) + 1e-9
+            force = (dist * dist / k) * delta / dist
+            disp[i] -= force
+            disp[j] += force
+        lengths = np.linalg.norm(disp, axis=1)
+        scale = np.minimum(lengths, temperature) / (lengths + 1e-9)
+        positions += disp * scale[:, None]
+        positions -= np.mean(positions, axis=0)
+        temperature *= 1.0 - (step + 1) / (iterations + 1)
+    return positions
+
+
+def bond_rows_by_state(path: Path) -> dict[str, dict[tuple[int, int], float]]:
+    result: dict[str, dict[tuple[int, int], float]] = {}
+    for row in read_csv_rows(path):
+        state = row["state"]
+        bond = (int(row["i"]), int(row["j"]))
+        value = float(row["correlation_unscaled_pauli"])
+        result.setdefault(state, {})[bond] = value
+    return result
+
+
+def plot_bond_map(
+    positions: np.ndarray,
+    bonds: list[tuple[int, int]],
+    values_by_bond: dict[tuple[int, int], float],
+    title: str,
+    output: Path,
+    *,
+    difference: bool = False,
+) -> None:
+    values = np.array([values_by_bond[tuple(bond)] for bond in bonds])
+    vmax = max(float(np.max(np.abs(values))), 1e-9) if difference else 3.0
+    vmin = -vmax if difference else -3.0
+    cmap = "bwr" if difference else "coolwarm"
+
+    fig, ax = plt.subplots(figsize=(7.0, 4.4))
+    norm = plt.Normalize(vmin=vmin, vmax=vmax)
+    for bond, value in zip(bonds, values):
+        i, j = bond
+        x = [positions[i, 0], positions[j, 0]]
+        y = [positions[i, 1], positions[j, 1]]
+        width = 1.2 + 3.0 * abs(value) / max(vmax, 1e-9)
+        ax.plot(x, y, color=plt.get_cmap(cmap)(norm(value)), linewidth=width, solid_capstyle="round")
+    ax.scatter(positions[:, 0], positions[:, 1], s=120, color="white", edgecolor="black", zorder=3)
+    for site, (x, y) in enumerate(positions):
+        ax.text(x, y, str(site), ha="center", va="center", fontsize=7, zorder=4)
+    sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
+    sm.set_array([])
+    cbar = fig.colorbar(sm, ax=ax, shrink=0.82)
+    cbar.set_label("C_ij difference" if difference else "C_ij = <XX+YY+ZZ>")
+    ax.set_title(title)
+    ax.set_axis_off()
+    fig.tight_layout()
+    fig.savefig(output, dpi=180)
+    plt.close(fig)
+
+
+def depth_rows(final_rows: list[dict[str, str]]) -> list[dict[str, float]]:
+    selected = []
+    for row in final_rows:
+        if row["state"] == "Weighted RVB-54":
+            depth = 0
+        elif row["state"].startswith("Weighted RVB + HVA p="):
+            depth = int(row["depth"])
+        else:
+            continue
+        selected.append(
+            {
+                "depth": depth,
+                "energy": float(row["energy_unscaled_pauli"]),
+                "error": float(row["error_vs_exact"]),
+                "fidelity": float(row["fidelity"]),
+                "magnetization": float(row["max_magnetization"]),
+                "entropy": float(row["entropy_midcut"]),
+            }
+        )
+    return sorted(selected, key=lambda item: item["depth"])
+
+
+def plot_depth_metric(rows: list[dict[str, float]], key: str, ylabel: str, output: Path) -> None:
+    fig, ax = plt.subplots(figsize=(5.2, 3.4))
+    ax.plot([row["depth"] for row in rows], [row[key] for row in rows], marker="o", linewidth=2)
+    ax.set_xlabel("HVA depth p")
+    ax.set_ylabel(ylabel)
+    ax.grid(alpha=0.25)
+    fig.tight_layout()
+    fig.savefig(output, dpi=180)
+    plt.close(fig)
+
+
+def plot_one_page_summary(
+    final_rows: list[dict[str, str]],
+    depth_data: list[dict[str, float]],
+    positions: np.ndarray,
+    bonds: list[tuple[int, int]],
+    state_bonds: dict[str, dict[tuple[int, int], float]],
+    output: Path,
+) -> None:
+    rows_by_label = {row["state"]: row for row in final_rows}
+    hva_rows = [row for row in final_rows if row["state"].startswith("Weighted RVB + HVA p=")]
+    best_hva = min(hva_rows, key=lambda row: abs(float(row["error_vs_exact"])))
+    best_depth = int(best_hva["depth"])
+    best_state_key = f"weighted_hva_p{best_depth}"
+    labels = ["Static dimer", "Weighted RVB-54", best_hva["state"], "Exact"]
+    short_labels = ["Dimer", "Weighted RVB", f"HVA p={best_depth}", "Exact"]
+    fig, axes = plt.subplots(2, 2, figsize=(10.5, 7.4))
+
+    errors = [abs(float(rows_by_label[label]["error_vs_exact"])) for label in labels]
+    axes[0, 0].bar(short_labels, errors)
+    axes[0, 0].set_ylabel("Error vs exact")
+    axes[0, 0].set_title("19-site Kagome Heisenberg benchmark")
+
+    axes[0, 1].bar(short_labels, [float(rows_by_label[label]["fidelity"]) for label in labels])
+    axes[0, 1].set_ylabel("Fidelity")
+    axes[0, 1].set_ylim(0.0, 1.05)
+
+    axes[1, 0].plot(
+        [row["depth"] for row in depth_data],
+        [row["energy"] for row in depth_data],
+        marker="o",
+        linewidth=2,
+    )
+    axes[1, 0].set_xlabel("HVA depth p")
+    axes[1, 0].set_ylabel("Energy, unscaled Pauli")
+    axes[1, 0].grid(alpha=0.25)
+
+    ax = axes[1, 1]
+    diff_values = {
+        bond: state_bonds[best_state_key][bond] - state_bonds["exact"][bond]
+        for bond in bonds
+    }
+    values = np.array([diff_values[bond] for bond in bonds])
+    vmax = max(float(np.max(np.abs(values))), 1e-9)
+    norm = plt.Normalize(vmin=-vmax, vmax=vmax)
+    for bond in bonds:
+        i, j = bond
+        value = diff_values[bond]
+        ax.plot(
+            [positions[i, 0], positions[j, 0]],
+            [positions[i, 1], positions[j, 1]],
+            color=plt.get_cmap("bwr")(norm(value)),
+            linewidth=1.2 + 3.0 * abs(value) / vmax,
+            solid_capstyle="round",
+        )
+    ax.scatter(positions[:, 0], positions[:, 1], s=80, color="white", edgecolor="black", zorder=3)
+    ax.set_title(f"Bond-correlation error: HVA p={best_depth} vs exact")
+    ax.set_axis_off()
+    sm = plt.cm.ScalarMappable(cmap="bwr", norm=norm)
+    sm.set_array([])
+    cbar = fig.colorbar(sm, ax=ax, shrink=0.68)
+    cbar.set_label("Delta C_ij")
+
+    fig.tight_layout()
+    fig.savefig(output, dpi=180)
+    plt.close(fig)
+
+
+def plot_calibration_scatter(final_rows: list[dict[str, str]], output: Path, *, zoom: bool = False) -> None:
+    scan_path = PROJECT_ROOT / "results" / "19site_calibration_scan.csv"
+    if not scan_path.exists():
+        return
+    scan_rows = read_csv_rows(scan_path)
+    calibration = [
+        row
+        for row in scan_rows
+        if abs(float(row.get("jprime", 1.0)) - 1.0) > 1e-12
+        and row.get("target_energy_error", "")
+        and row.get("target_fidelity", "")
+    ]
+    if not calibration:
+        return
+    p2 = next(row for row in final_rows if row["state"] == "Weighted RVB + HVA p=2")
+    fig, ax = plt.subplots(figsize=(5.5, 3.8))
+    styles = {
+        "group": ("o", "#4c78a8"),
+        "bond": ("s", "#59a14f"),
+        "triangle": ("^", "#f28e2b"),
+    }
+    for mode in sorted({row.get("scan_mode", "scan") for row in calibration}):
+        marker, color = styles.get(mode, ("o", "#4c78a8"))
+        mode_rows = [row for row in calibration if row.get("scan_mode", "scan") == mode]
+        ax.scatter(
+            [abs(float(row["target_energy_error"])) for row in mode_rows],
+            [float(row["target_fidelity"]) for row in mode_rows],
+            marker=marker,
+            label=f"{mode} calibration",
+            color=color,
+            alpha=0.75,
+            edgecolors="none",
+        )
+    ax.scatter(
+        [abs(float(p2["error_vs_exact"]))],
+        [float(p2["fidelity"])],
+        marker="*",
+        s=180,
+        color="#d62728",
+        label="Weighted RVB + HVA p=2",
+        zorder=4,
+    )
+    best = min(calibration, key=lambda row: abs(float(row["target_energy_error"])))
+    best_x = abs(float(best["target_energy_error"]))
+    best_y = float(best["target_fidelity"])
+    ax.scatter([best_x], [best_y], marker="o", s=90, facecolors="none", edgecolors="black", linewidths=1.2)
+    ax.annotate(
+        f"{best.get('scan_label', 'best')}, J'={float(best['jprime']):.2f}",
+        xy=(best_x, best_y),
+        xytext=(8, -14),
+        textcoords="offset points",
+        fontsize=7,
+    )
+    if zoom:
+        ax.set_xlim(0.0, 0.15)
+        ax.set_ylim(0.95, 1.01)
+    else:
+        ax.set_xscale("symlog", linthresh=1e-3)
+    ax.set_xlabel("Target energy error")
+    ax.set_ylabel("Fidelity to exact")
+    ax.set_title(
+        "Calibration scan vs no-calibration HVA"
+        if not zoom
+        else "Calibration scan vs no-calibration HVA, zoom"
+    )
+    ax.grid(alpha=0.25)
+    ax.legend(fontsize=8)
+    fig.tight_layout()
+    fig.savefig(output, dpi=180)
+    plt.close(fig)
+
+
+def main() -> None:
+    results_dir = PROJECT_ROOT / "results"
+    figures_dir = PROJECT_ROOT / "figures"
+    figures_dir.mkdir(exist_ok=True)
+    bonds = load_bonds_csv(PROJECT_ROOT / "data" / "19site_bonds.csv")
+    positions = force_layout(NUM_SITES, bonds)
+    state_bonds = bond_rows_by_state(results_dir / "19site_bond_correlations_by_state.csv")
+
+    for state, filename in STATE_TO_FIGURE.items():
+        if state in state_bonds:
+            title = state.replace("_", " ")
+            plot_bond_map(positions, bonds, state_bonds[state], title, figures_dir / filename)
+    if "weighted_hva_p2" in state_bonds and "exact" in state_bonds:
+        diff = {bond: state_bonds["weighted_hva_p2"][bond] - state_bonds["exact"][bond] for bond in bonds}
+        plot_bond_map(
+            positions,
+            bonds,
+            diff,
+            "weighted HVA p=2 minus exact",
+            figures_dir / "bond_map_error_p2_vs_exact.png",
+            difference=True,
+        )
+
+    final_rows = read_csv_rows(results_dir / "final_result_table.csv")
+    hva_rows = [row for row in final_rows if row["state"].startswith("Weighted RVB + HVA p=")]
+    if hva_rows:
+        best_hva = min(hva_rows, key=lambda row: abs(float(row["error_vs_exact"])))
+        best_key = f"weighted_hva_p{int(best_hva['depth'])}"
+        if best_key in state_bonds and "exact" in state_bonds:
+            diff = {bond: state_bonds[best_key][bond] - state_bonds["exact"][bond] for bond in bonds}
+            plot_bond_map(
+                positions,
+                bonds,
+                diff,
+                f"weighted HVA p={best_hva['depth']} minus exact",
+                figures_dir / "bond_map_error_best_hva_vs_exact.png",
+                difference=True,
+            )
+    depth_data = depth_rows(final_rows)
+    plot_depth_metric(depth_data, "energy", "Energy, unscaled Pauli", figures_dir / "energy_vs_hva_depth.png")
+    plot_depth_metric(depth_data, "error", "Error vs exact", figures_dir / "error_vs_hva_depth.png")
+    plot_depth_metric(depth_data, "fidelity", "Fidelity", figures_dir / "fidelity_vs_hva_depth.png")
+    plot_depth_metric(depth_data, "magnetization", "Max |<Sz>|", figures_dir / "magnetization_vs_hva_depth.png")
+    plot_depth_metric(depth_data, "entropy", "Midcut entropy", figures_dir / "entropy_vs_hva_depth.png")
+    plot_one_page_summary(
+        final_rows,
+        depth_data,
+        positions,
+        bonds,
+        state_bonds,
+        figures_dir / "one_page_summary.png",
+    )
+    plot_calibration_scatter(final_rows, figures_dir / "calibration_energy_vs_fidelity.png")
+    plot_calibration_scatter(final_rows, figures_dir / "calibration_energy_vs_fidelity_zoom.png", zoom=True)
+    print(f"Wrote figures to {figures_dir}")
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "qintern-kagome-hva"
+version = "0.1.0"
+description = "Weighted-RVB initialization and Heisenberg-HVA refinement for a 19-site Kagome Heisenberg benchmark."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [
+  {name = "Adel H. Al-Yoorby"}
+]
+dependencies = [
+  "numpy>=2.0",
+  "scipy>=1.13",
+  "pandas>=2.2",
+  "matplotlib>=3.8"
+]
+
+[project.optional-dependencies]
+qiskit = [
+  "qiskit==2.4.1",
+  "qiskit-aer==0.17.2",
+  "jupyter==1.1.1",
+  "notebook==7.5.7"
+]
+dev = [
+  "pytest==9.1.0"
+]
+
+[tool.setuptools]
+py-modules = ["kagome_heisenberg_poc"]
+
+[tool.setuptools.package-dir]
+"" = "src"

@@ -1,0 +1,36 @@
+{
+  "command": "python.exe scripts/run_19site_heisenberg_hva_fast.py --init weighted --max-layers 2 --method Nelder-Mead --maxiter 35 --restarts 0 --tag p2_reference",
+  "seed": 123,
+  "method": "Nelder-Mead",
+  "maxiter": 35,
+  "base_deterministic_starts": 8,
+  "warm_start_candidates_per_depth_after_p1": 2,
+  "random_restarts": 0,
+  "start_strategy": "small-angle deterministic + warm starts + optional random restarts",
+  "start_scale": 0.18,
+  "bounded": false,
+  "bound": null,
+  "max_layers": 2,
+  "initialization": "weighted",
+  "weighted_state": "results/19site_weighted_rvb_state_n54.npz",
+  "reference_energy": -29.146168109350135,
+  "pauli_scale": 1.0,
+  "hamiltonian_convention": "unscaled Pauli: sum_<ij>(XX+YY+ZZ)",
+  "bond_file": "data/19site_bonds.csv",
+  "output_csv": "results/19site_heisenberg_hva_fast_weighted_p2_reference.csv",
+  "history_csv": "results/19site_heisenberg_hva_fast_weighted_p2_reference_history.csv",
+  "optimizer_backend": "fixed-Sz sector cached NumPy Heisenberg kernels",
+  "elapsed_seconds": 36.26612973213196,
+  "blas_threads": {
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "NUMEXPR_NUM_THREADS": "1"
+  },
+  "versions": {
+    "python": "3.14.3",
+    "numpy": "2.4.3",
+    "scipy": "1.17.1",
+    "qiskit": "2.4.1"
+  }
+}

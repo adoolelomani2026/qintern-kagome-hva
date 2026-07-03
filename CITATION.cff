@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+title: "Weighted-RVB Initialization and Heisenberg-HVA Refinement for the 19-Site Kagome Antiferromagnetic Heisenberg Model"
+message: "If you use this proof-of-concept, please cite it using this metadata."
+type: software
+authors:
+  - family-names: "Al-Yoorby"
+    given-names: "Adel H."
+date-released: "2026-08-15"
+license: MIT

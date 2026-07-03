@@ -1,0 +1,8 @@
+# Copy this file to data/19site_bonds.csv and replace the sample rows with the
+# exact 19-site Kagome bond list from the paper/supplementary material.
+# Site indices should be zero-based. Extra columns such as group labels are
+# allowed; only the first two columns are read by the loader.
+i,j,group
+0,1,example
+1,2,example
+2,0,example
