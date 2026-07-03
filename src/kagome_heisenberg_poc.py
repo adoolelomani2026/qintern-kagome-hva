@@ -20,6 +20,25 @@ Bond = tuple[int, int]
 Parameterization = Literal["shared", "bond", "grouped"]
 InitialState = Literal["singlet_pairs", "neel", "zero"]
 
+DEPENBROCK_DMRG_PHYSICAL_ENERGY_PER_SITE = -0.4386
+DEPENBROCK_DMRG_PHYSICAL_ENERGY_PER_SITE_UNCERTAINTY = 0.0005
+DEPENBROCK_DMRG_TRIPLET_GAP = 0.13
+DEPENBROCK_DMRG_TRIPLET_GAP_UNCERTAINTY = 0.01
+AHSAN_19SITE_UNSCALED_ENERGY_ROUNDED = -29.14
+AHSAN_DEFECT_JPRIME_CENTER = 1.95
+AHSAN_DEFECT_JPRIME_GRID = (1.80, 1.90, 1.95, 2.00, 2.10)
+
+LITERATURE_REFERENCES = {
+    "depenbrock2012": {
+        "citation": "Depenbrock, McCulloch, and Schollwoeck, PRL 109, 067201 (2012)",
+        "arxiv": "1205.4858",
+    },
+    "ahsan2025": {
+        "citation": "Ahsan, arXiv:2507.06361v3 (2025)",
+        "arxiv": "2507.06361v3",
+    },
+}
+
 
 @dataclass(frozen=True)
 class VQEResult:
@@ -1081,13 +1100,19 @@ def bond_delocalization_metrics(correlations: np.ndarray) -> dict[str, float]:
         participation = float(1.0 / np.sum(probabilities**2))
     else:
         participation = 0.0
+    strong_mask = values < -2.0
+    strong_weight = float(np.sum(singlet_weight[strong_mask]))
+    frozen_weight_fraction = strong_weight / total_weight if total_weight > 0 else 0.0
     return {
         "bond_corr_min": float(np.min(values)),
         "bond_corr_max": float(np.max(values)),
         "bond_corr_mean": float(np.mean(values)),
         "bond_corr_std": float(np.std(values)),
         "af_weight_participation": participation,
-        "strong_dimer_count": float(np.sum(values < -2.0)),
+        "af_participation_ratio": participation / len(values) if len(values) else 0.0,
+        "strong_dimer_count": float(np.sum(strong_mask)),
+        "strong_dimer_fraction": float(np.mean(strong_mask)) if len(values) else 0.0,
+        "strong_dimer_af_weight_fraction": frozen_weight_fraction,
     }
 
 
@@ -1113,6 +1138,86 @@ def spin_correlation_matrix_numpy(
     return matrix
 
 
+def graph_distance_matrix(num_sites: int, bonds: Iterable[Bond]) -> np.ndarray:
+    """Return all-pairs shortest-path distances on the bond graph."""
+
+    distances = np.full((num_sites, num_sites), np.inf, dtype=float)
+    np.fill_diagonal(distances, 0.0)
+    for i, j in bonds:
+        distances[i, j] = 1.0
+        distances[j, i] = 1.0
+    for k in range(num_sites):
+        distances = np.minimum(distances, distances[:, [k]] + distances[[k], :])
+    return distances
+
+
+def spin_correlation_distance_profile(
+    matrix: np.ndarray,
+    distances: np.ndarray,
+) -> list[dict[str, float | int]]:
+    """Average absolute spin correlation by graph distance.
+
+    Depenbrock et al. diagnose the kagome spin liquid with short-ranged
+    spin correlations.  For this finite open 19-site patch, graph distance is a
+    conservative geometry-free proxy for that decay diagnostic.
+    """
+
+    corr = np.asarray(matrix, dtype=float)
+    dist = np.asarray(distances, dtype=float)
+    if corr.shape != dist.shape or corr.ndim != 2 or corr.shape[0] != corr.shape[1]:
+        raise ValueError("matrix and distances must be square arrays with matching shape")
+
+    rows: list[dict[str, float | int]] = []
+    finite_distances = sorted(
+        int(value)
+        for value in np.unique(dist[np.isfinite(dist)])
+        if value > 0
+    )
+    for distance in finite_distances:
+        mask = np.triu(dist == distance, k=1)
+        values = corr[mask]
+        if values.size == 0:
+            continue
+        abs_values = np.abs(values)
+        rows.append(
+            {
+                "graph_distance": distance,
+                "pair_count": int(values.size),
+                "mean_abs_correlation": float(np.mean(abs_values)),
+                "max_abs_correlation": float(np.max(abs_values)),
+                "rms_correlation": float(np.sqrt(np.mean(values**2))),
+            }
+        )
+    return rows
+
+
+def exponential_decay_length_from_profile(
+    profile: Iterable[dict[str, float | int]],
+    *,
+    value_key: str = "mean_abs_correlation",
+) -> float:
+    """Fit ``value ~= a * exp(-distance / xi)`` and return ``xi``.
+
+    The fit is intentionally simple and is only used as a compact finite-patch
+    diagnostic.  It should not be read as a thermodynamic correlation length.
+    """
+
+    distances = []
+    values = []
+    for row in profile:
+        distance = float(row["graph_distance"])
+        value = float(row[value_key])
+        if distance > 0.0 and value > 0.0 and np.isfinite(value):
+            distances.append(distance)
+            values.append(value)
+    if len(values) < 2:
+        return float("nan")
+    slope, _ = np.polyfit(np.asarray(distances), np.log(np.asarray(values)), deg=1)
+    if slope >= 0.0:
+        return float("inf")
+    return float(-1.0 / slope)
+
+
 def entropy_profile_numpy(state: np.ndarray, cuts: Iterable[int] | None = None) -> np.ndarray:
     """Return bipartite entropy for selected contiguous qubit cuts."""
 
@@ -1126,6 +1231,28 @@ def sector_weight(state: np.ndarray, basis: np.ndarray) -> float:
 
     data = np.asarray(state)
     return float(np.sum(np.abs(data[basis]) ** 2))
+
+
+def literature_benchmark_row(
+    num_sites: int,
+    energy_unscaled_pauli: float,
+) -> dict[str, float | str]:
+    """Convert a finite-patch energy into paper benchmark conventions."""
+
+    physical_energy = float(energy_unscaled_pauli) / 4.0
+    physical_per_site = physical_energy / float(num_sites)
+    dmrg_per_site = DEPENBROCK_DMRG_PHYSICAL_ENERGY_PER_SITE
+    return {
+        "reference": "Depenbrock2012 thermodynamic DMRG / Ahsan2025 rounded 19-site calibration",
+        "energy_unscaled_pauli": float(energy_unscaled_pauli),
+        "energy_physical_spin": physical_energy,
+        "energy_physical_per_site": physical_per_site,
+        "depenbrock_dmrg_physical_per_site": dmrg_per_site,
+        "delta_vs_depenbrock_dmrg_per_site": physical_per_site - dmrg_per_site,
+        "ahsan_19site_rounded_unscaled_energy": AHSAN_19SITE_UNSCALED_ENERGY_ROUNDED,
+        "delta_vs_ahsan_rounded_19site_unscaled": float(energy_unscaled_pauli)
+        - AHSAN_19SITE_UNSCALED_ENERGY_ROUNDED,
+    }
 
 
 def exact_reference_energy(path: str | Path = "results/19site_fixed_sz_exact_n9.npz") -> float:

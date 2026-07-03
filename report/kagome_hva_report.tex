@@ -178,7 +178,7 @@ p_{ij} = \frac{\max(0,-C_{ij})}{\sum_{(k,l)}\max(0,-C_{kl})},
 \quad
 P_{\rm AF} = \frac{1}{\sum_{ij}p_{ij}^2}.
 \end{equation}
-Large $P_{\rm AF}$ indicates more distributed antiferromagnetic correlation weight.  The figures use a deterministic graph layout for visualization, not a physical Kagome embedding.
+Large $P_{\rm AF}$ indicates more distributed antiferromagnetic correlation weight.  Motivated by the DMRG diagnostics of Ref.~\cite{depenbrock2012}, the code also reports the normalized participation $P_{\rm AF}/|E|$, the fraction of antiferromagnetic weight trapped on nearly perfect singlet bonds with $C_{ij}<-2$, and a graph-distance spin-correlation profile.  The fitted graph-distance decay length is only a finite-patch proxy; it is not a thermodynamic correlation length.  The figures use a deterministic graph layout for visualization, not a physical Kagome embedding.
 
 \section{Results}
 
@@ -210,6 +210,22 @@ Exact & -- & -29.14616811 & 0.00000000 & 1.000000 & 100.00\% & 3.212669 & 0.0940
 \end{tabular}}
 \end{table}
 
+\begin{table}[H]
+\centering
+\caption{Paper-inspired correlation diagnostics.  The frozen AF fraction measures how much antiferromagnetic bond weight lies on nearly perfect dimers.  The graph-distance decay length is a compact finite-patch proxy inspired by the log-linear correlation plots of Ref.~\cite{depenbrock2012}.}
+\label{tab:paper_diagnostics}
+\begin{tabular}{lrrr}
+\toprule
+State & $P_{\rm AF}/30$ & Frozen AF frac. & $\xi_{\rm graph}$ \\
+\midrule
+Static dimer & 0.300 & 1.000 & -- \\
+Weighted RVB-54 & 0.681 & 0.000 & 1.662 \\
+Weighted RVB + HVA $p=4$ & 0.681 & 0.000 & 1.624 \\
+Exact & 0.682 & 0.000 & 1.356 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \subsection{Depth Dependence}
 
 \begin{figure}[H]
@@ -239,6 +255,13 @@ Exact & -- & -29.14616811 & 0.00000000 & 1.000000 & 100.00\% & 3.212669 & 0.0940
 \includegraphics[width=0.62\textwidth]{magnetization_vs_hva_depth.png}
 \caption{Maximum site magnetization versus HVA depth.  The weighted RVB and HVA-refined states remain much closer to the low-magnetization exact state than the static dimer baseline.}
 \label{fig:magnetization}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.68\textwidth]{spin_distance_profile.png}
+\caption{Finite-patch spin-correlation decay proxy.  Correlations are averaged by graph distance because reliable physical coordinates for the extracted 19-site patch are not part of the input data.  The static dimer has only nearest-neighbor singlet correlations, while the weighted-RVB and HVA-refined states show distributed short-range correlations closer to the exact-state pattern.}
+\label{fig:spin_distance}
 \end{figure}
 
 \subsection{Bond-Correlation Structure}
@@ -368,6 +391,9 @@ The main repository artifacts are:
 \begin{itemize}
 \item \texttt{data/19site\_bonds.csv}: active 19-site bond list and edge coloring.
 \item \texttt{results/final\_result\_table.csv}: main result table.
+\item \texttt{results/19site\_paper\_diagnostics.csv}: paper-inspired correlation summaries.
+\item \texttt{results/19site\_spin\_distance\_profile.csv}: graph-distance spin-correlation profile used in Fig.~\ref{fig:spin_distance}.
+\item \texttt{results/literature\_benchmark\_comparison.csv}: convention conversion against Depenbrock DMRG and Ahsan rounded values.
 \item \texttt{results/no\_calibration\_vs\_best\_calibration.csv}: compact comparison of the best HVA and best calibration reference.
 \item \texttt{results/19site\_heisenberg\_hva\_fast\_weighted\_p4\_neldermead\_*.csv}: current best serious no-calibration HVA output.
 \item \texttt{figures/}: all plots included in this report.

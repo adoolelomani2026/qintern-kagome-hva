@@ -13,6 +13,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT / "src"))
 
 from kagome_heisenberg_poc import (  # noqa: E402
+    AHSAN_DEFECT_JPRIME_GRID,
     exact_ground_state_fixed_sz,
     fixed_sz_heisenberg_sparse,
     load_bonds_with_groups_csv,
@@ -42,6 +43,10 @@ FIELDNAMES = [
 
 def parse_float_list(text: str) -> list[float]:
     return [float(piece.strip()) for piece in text.split(",") if piece.strip()]
+
+
+def format_float_list(values) -> str:
+    return ",".join(f"{float(value):.12g}" for value in values)
 
 
 def read_csv_rows(path: Path) -> list[dict[str, str]]:
@@ -153,6 +158,12 @@ def calibration_targets(args, bonds, groups) -> list[dict[str, object]]:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--preset",
+        choices=["default", "ahsan-defect"],
+        default="default",
+        help="Use paper-derived scan defaults; ahsan-defect scans all graph triangles near Jprime ~= 2.",
+    )
     parser.add_argument("--scan-mode", choices=["group", "bond", "triangle"], default="group")
     parser.add_argument("--scan-group", default="color3")
     parser.add_argument("--all-groups", action="store_true")
@@ -175,6 +186,10 @@ def main() -> None:
         help="Stop after writing this many new rows; useful for resumable long scans.",
     )
     args = parser.parse_args()
+    if args.preset == "ahsan-defect":
+        args.scan_mode = "triangle"
+        args.all_triangles = True
+        args.jprimes = format_float_list(AHSAN_DEFECT_JPRIME_GRID)
 
     start = time.time()
     bonds, groups = load_bonds_with_groups_csv(PROJECT_ROOT / "data" / "19site_bonds.csv")

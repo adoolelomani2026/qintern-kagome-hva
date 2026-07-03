@@ -21,6 +21,7 @@ from kagome_heisenberg_poc import (  # noqa: E402
     fixed_sector_fidelity,
     heisenberg_energy_cached_numpy,
     heisenberg_sector_state_from_initial_numpy,
+    literature_benchmark_row,
     load_bonds_with_groups_csv,
     load_sector_exact_result,
     matching_from_bonds,
@@ -61,6 +62,7 @@ def load_diagnostics_cache(results_dir: Path, bonds: list[tuple[int, int]]) -> d
         "bond_correlations": {},
         "magnetization": {},
         "entropy": {},
+        "paper": {},
     }
     bond_path = results_dir / "19site_bond_correlations_by_state.csv"
     if bond_path.exists():
@@ -88,6 +90,14 @@ def load_diagnostics_cache(results_dir: Path, bonds: list[tuple[int, int]]) -> d
     if entropy_path.exists():
         for row in read_csv_dicts(entropy_path):
             cache["entropy"].setdefault(row["state"], {})[int(row["cut"])] = float(row["entropy"])
+    paper_path = results_dir / "19site_paper_diagnostics.csv"
+    if paper_path.exists():
+        for row in read_csv_dicts(paper_path):
+            cache["paper"][row["state"]] = {
+                key: float(value)
+                for key, value in row.items()
+                if key != "state" and value not in {"", "nan", "inf", "-inf"}
+            }
     return cache
 
 
@@ -140,9 +150,12 @@ def metrics_row(
         correlations = diagnostics["bond_correlations"].get(diagnostic_state)
         magnetization = diagnostics["magnetization"].get(diagnostic_state)
         entropy_by_cut = diagnostics["entropy"].get(diagnostic_state, {})
+        paper_metrics = diagnostics["paper"].get(diagnostic_state, {})
         if all(cut in entropy_by_cut for cut in SELECTED_ENTROPY_CUTS):
             entropy_profile = np.array([entropy_by_cut[cut] for cut in SELECTED_ENTROPY_CUTS])
             entropy_midcut = entropy_by_cut.get(NUM_SITES // 2)
+    else:
+        paper_metrics = {}
 
     if correlations is None:
         correlations = cached_bond_correlations(state, bond_caches)
@@ -183,7 +196,11 @@ def metrics_row(
         "bond_corr_mean": delocalization["bond_corr_mean"],
         "bond_corr_std": delocalization["bond_corr_std"],
         "af_weight_participation": delocalization["af_weight_participation"],
+        "af_participation_ratio": delocalization["af_participation_ratio"],
         "strong_dimer_count": delocalization["strong_dimer_count"],
+        "strong_dimer_fraction": delocalization["strong_dimer_fraction"],
+        "strong_dimer_af_weight_fraction": delocalization["strong_dimer_af_weight_fraction"],
+        "spin_graph_corr_length": paper_metrics.get("spin_graph_corr_length", float("nan")),
         "bond_corr_l2_error": float(np.linalg.norm(corr_delta)),
         "bond_corr_mae": float(np.mean(np.abs(corr_delta))),
         "bond_corr_pearson_corr": pearson,
@@ -360,6 +377,18 @@ def main() -> None:
     output_dir.mkdir(exist_ok=True)
     final_path = output_dir / "final_result_table.csv"
     write_rows(final_path, rows)
+    literature_path = output_dir / "literature_benchmark_comparison.csv"
+    write_rows(
+        literature_path,
+        [
+            {
+                "state": row["state"],
+                **literature_benchmark_row(NUM_SITES, float(row["energy_unscaled_pauli"])),
+            }
+            for row in rows
+            if row["state"] != "Exact" or str(row["energy_unscaled_pauli"]).strip()
+        ],
+    )
 
     comparison_rows = [
         {
@@ -479,6 +508,7 @@ def main() -> None:
 
     print(f"Using HVA CSV: {hva_csv}")
     print(f"Wrote {final_path}")
+    print(f"Wrote {literature_path}")
     print(f"Wrote {comparison_path}")
     if calibration_mode_rows:
         print(f"Wrote {mode_summary_path}")

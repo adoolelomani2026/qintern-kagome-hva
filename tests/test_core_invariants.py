@@ -12,14 +12,20 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT / "src"))
 
 from kagome_heisenberg_poc import (  # noqa: E402
+    AHSAN_DEFECT_JPRIME_GRID,
+    AHSAN_19SITE_UNSCALED_ENERGY_ROUNDED,
+    DEPENBROCK_DMRG_PHYSICAL_ENERGY_PER_SITE,
     apply_heisenberg_gate_cached,
     apply_two_qubit_gate_numpy,
+    bond_delocalization_metrics,
     build_bond_index_cache,
     build_heisenberg_ansatz,
     build_sector_bond_index_cache,
+    exponential_decay_length_from_profile,
     enumerate_maximum_dimer_coverings,
     exact_ground_state_fixed_sz,
     fixed_sz_heisenberg_sparse,
+    graph_distance_matrix,
     heisenberg_energy_numpy,
     heisenberg_gate_matrix,
     heisenberg_hamiltonian,
@@ -28,10 +34,12 @@ from kagome_heisenberg_poc import (  # noqa: E402
     heisenberg_statevector_from_initial_numpy,
     heisenberg_statevector_numpy,
     kagome_patch,
+    literature_benchmark_row,
     load_bonds_with_groups_csv,
     load_sector_exact_result,
     sector_state_from_full_state,
     sector_weight,
+    spin_correlation_distance_profile,
     validate_bond_groups_are_matchings,
 )
 
@@ -199,3 +207,48 @@ def test_final_result_table_uses_selected_hva_energy() -> None:
 def test_default_hva_selection_excludes_smoke_files() -> None:
     selected = default_hva_csv()
     assert "smoke" not in selected.name
+
+
+def test_literature_benchmark_conventions_are_explicit() -> None:
+    row = literature_benchmark_row(19, -29.146168109350135)
+    assert DEPENBROCK_DMRG_PHYSICAL_ENERGY_PER_SITE == pytest.approx(-0.4386)
+    assert AHSAN_19SITE_UNSCALED_ENERGY_ROUNDED == pytest.approx(-29.14)
+    assert 1.95 in AHSAN_DEFECT_JPRIME_GRID
+    assert row["energy_physical_spin"] == pytest.approx(-29.146168109350135 / 4.0)
+    assert row["energy_physical_per_site"] == pytest.approx(-29.146168109350135 / (4.0 * 19))
+    assert row["delta_vs_ahsan_rounded_19site_unscaled"] == pytest.approx(-0.006168109350136489)
+
+
+def test_paper_inspired_correlation_diagnostics() -> None:
+    correlations = np.array([-3.0, -3.0, -1.0, -0.5, 0.2])
+    metrics = bond_delocalization_metrics(correlations)
+    assert metrics["strong_dimer_count"] == pytest.approx(2.0)
+    assert metrics["strong_dimer_fraction"] == pytest.approx(0.4)
+    assert metrics["strong_dimer_af_weight_fraction"] == pytest.approx(6.0 / 7.5)
+    assert 0.0 < metrics["af_participation_ratio"] <= 1.0
+
+    distances = graph_distance_matrix(3, [(0, 1), (1, 2)])
+    np.testing.assert_allclose(
+        distances,
+        np.array(
+            [
+                [0.0, 1.0, 2.0],
+                [1.0, 0.0, 1.0],
+                [2.0, 1.0, 0.0],
+            ]
+        ),
+    )
+    matrix = np.array(
+        [
+            [3.0, -1.0, 0.1],
+            [-1.0, 3.0, -0.5],
+            [0.1, -0.5, 3.0],
+        ]
+    )
+    profile = spin_correlation_distance_profile(matrix, distances)
+    assert profile[0]["graph_distance"] == 1
+    assert profile[0]["pair_count"] == 2
+    assert profile[0]["mean_abs_correlation"] == pytest.approx(0.75)
+    assert profile[1]["graph_distance"] == 2
+    assert profile[1]["mean_abs_correlation"] == pytest.approx(0.1)
+    assert exponential_decay_length_from_profile(profile) > 0.0

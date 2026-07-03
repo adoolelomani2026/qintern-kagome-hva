@@ -153,6 +153,44 @@ def plot_depth_metric(rows: list[dict[str, float]], key: str, ylabel: str, outpu
     plt.close(fig)
 
 
+def plot_spin_distance_profile(profile_path: Path, output: Path) -> None:
+    if not profile_path.exists():
+        return
+    rows = read_csv_rows(profile_path)
+    labels = {
+        "static_dimer": "Static dimer",
+        "weighted_rvb_54": "Weighted RVB",
+        "weighted_hva_p4": "Weighted HVA p=4",
+        "exact": "Exact",
+    }
+    fig, ax = plt.subplots(figsize=(5.6, 3.7))
+    for state, label in labels.items():
+        state_rows = [
+            row
+            for row in rows
+            if row["state"] == state and float(row["mean_abs_correlation"]) > 0.0
+        ]
+        if not state_rows:
+            continue
+        state_rows = sorted(state_rows, key=lambda row: int(row["graph_distance"]))
+        ax.plot(
+            [int(row["graph_distance"]) for row in state_rows],
+            [float(row["mean_abs_correlation"]) for row in state_rows],
+            marker="o",
+            linewidth=2,
+            label=label,
+        )
+    ax.set_yscale("log")
+    ax.set_xlabel("Graph distance")
+    ax.set_ylabel("Mean |<XX+YY+ZZ>|")
+    ax.set_title("Finite-patch spin-correlation decay proxy")
+    ax.grid(alpha=0.25, which="both")
+    ax.legend(fontsize=8)
+    fig.tight_layout()
+    fig.savefig(output, dpi=180)
+    plt.close(fig)
+
+
 def plot_one_page_summary(
     final_rows: list[dict[str, str]],
     depth_data: list[dict[str, float]],
@@ -336,6 +374,10 @@ def main() -> None:
     plot_depth_metric(depth_data, "fidelity", "Fidelity", figures_dir / "fidelity_vs_hva_depth.png")
     plot_depth_metric(depth_data, "magnetization", "Max |<Sz>|", figures_dir / "magnetization_vs_hva_depth.png")
     plot_depth_metric(depth_data, "entropy", "Midcut entropy", figures_dir / "entropy_vs_hva_depth.png")
+    plot_spin_distance_profile(
+        results_dir / "19site_spin_distance_profile.csv",
+        figures_dir / "spin_distance_profile.png",
+    )
     plot_one_page_summary(
         final_rows,
         depth_data,

@@ -145,10 +145,12 @@ on hardware.
 - `scripts/build_final_summary.py` - final table, cached-diagnostics summary,
   and calibration comparison.
 - `scripts/run_19site_diagnostics.py` - bond correlations, magnetization,
-  spin-correlation matrices, and entropy profiles.
+  spin-correlation matrices, graph-distance spin-correlation profiles, and
+  entropy profiles.
 - `scripts/make_figures.py` - bond maps, depth plots, and one-page summary.
 - `scripts/run_19site_calibration_scan.py` - group, bond, or triangle Jprime
-  calibration scans.
+  calibration scans, including `--preset ahsan-defect` for the paper-inspired
+  all-triangle `J' ~= 2` regime.
 - `notebooks/main_19site_weighted_rvb_hva_result.ipynb` - clean presentation
   notebook.
 
@@ -254,6 +256,17 @@ C_ij = <XX + YY + ZZ>_ij
 
 `strong_dimer_count` counts bonds with `C_ij < -2` in the unscaled Pauli
 convention. A perfect singlet has `C_ij = -3`.
+The paper-inspired diagnostics added after reading Depenbrock et al. and Ahsan
+also include:
+
+- `af_participation_ratio = P_AF / number_of_bonds`
+- `strong_dimer_af_weight_fraction`, which flags frozen VBC/dimer-product
+  behavior
+- `spin_graph_corr_length`, a finite-patch graph-distance decay proxy
+- `results/19site_spin_distance_profile.csv`, the underlying distance profile
+- `results/literature_benchmark_comparison.csv`, which reports physical
+  per-site energies against the Depenbrock DMRG benchmark and Ahsan's rounded
+  19-site value
 
 Generated figures live in `figures/`:
 
@@ -269,6 +282,7 @@ Generated figures live in `figures/`:
 - `fidelity_vs_hva_depth.png`
 - `magnetization_vs_hva_depth.png`
 - `entropy_vs_hva_depth.png`
+- `spin_distance_profile.png`
 - `calibration_energy_vs_fidelity.png`
 - `calibration_energy_vs_fidelity_zoom.png`
 - `one_page_summary.png`

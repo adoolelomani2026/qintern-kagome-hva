@@ -13,12 +13,15 @@ sys.path.insert(0, str(PROJECT_ROOT / "src"))
 
 from kagome_heisenberg_poc import (  # noqa: E402
     bipartite_entropy_numpy,
+    bond_delocalization_metrics,
     build_bond_index_cache,
     build_sector_bond_index_cache,
     embed_sector_state,
     entropy_profile_numpy,
+    exponential_decay_length_from_profile,
     enumerate_maximum_dimer_coverings,
     fixed_sector_fidelity,
+    graph_distance_matrix,
     heisenberg_energy_cached_numpy,
     heisenberg_sector_state_from_initial_numpy,
     load_bonds_with_groups_csv,
@@ -27,6 +30,7 @@ from kagome_heisenberg_poc import (  # noqa: E402
     rvb_state_from_coverings,
     sector_state_from_full_state,
     singlet_product_state_from_pairs,
+    spin_correlation_distance_profile,
     spin_z_expectations_numpy,
 )
 
@@ -169,14 +173,20 @@ def main() -> None:
     states = build_states(bonds, groups, exact)
     active_cuts = entropy_cuts(args.entropy_cuts)
     bond_caches = build_bond_index_cache(NUM_SITES, bonds)
+    distance_matrix = graph_distance_matrix(NUM_SITES, bonds)
     results_dir = PROJECT_ROOT / "results"
     results_dir.mkdir(exist_ok=True)
 
     bond_rows = []
     site_rows = []
     entropy_rows = []
+    paper_rows_by_state = {}
     for state_name, state in states.items():
         correlations = cached_bond_correlations(state, bond_caches)
+        paper_rows_by_state[state_name] = {
+            "state": state_name,
+            **bond_delocalization_metrics(correlations),
+        }
         for (i, j), value in zip(bonds, correlations):
             bond_rows.append(
                 {
@@ -204,8 +214,15 @@ def main() -> None:
                 value = heisenberg_energy_cached_numpy(state, cache, pauli_scale=PAULI_SCALE)
                 matrices[state_name][i, j] = value
                 matrices[state_name][j, i] = value
+    distance_rows = []
     for state_name, matrix in matrices.items():
         write_matrix_csv(results_dir / f"19site_spin_correlation_{slug(state_name)}.csv", matrix)
+        profile = spin_correlation_distance_profile(matrix, distance_matrix)
+        paper_rows_by_state[state_name]["spin_graph_corr_length"] = exponential_decay_length_from_profile(
+            profile
+        )
+        for row in profile:
+            distance_rows.append({"state": state_name, **row})
 
     with (results_dir / "19site_bond_correlations_by_state.csv").open("w", newline="") as handle:
         writer = csv.DictWriter(handle, fieldnames=list(bond_rows[0].keys()))
@@ -221,6 +238,17 @@ def main() -> None:
         writer = csv.DictWriter(handle, fieldnames=list(entropy_rows[0].keys()))
         writer.writeheader()
         writer.writerows(entropy_rows)
+
+    paper_rows = list(paper_rows_by_state.values())
+    with (results_dir / "19site_paper_diagnostics.csv").open("w", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=list(paper_rows[0].keys()))
+        writer.writeheader()
+        writer.writerows(paper_rows)
+
+    with (results_dir / "19site_spin_distance_profile.csv").open("w", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=list(distance_rows[0].keys()))
+        writer.writeheader()
+        writer.writerows(distance_rows)
 
     exact_by_bond = {
         (row["i"], row["j"]): row["correlation_unscaled_pauli"]
@@ -254,7 +282,8 @@ def main() -> None:
             f"{state_name}: E={float(np.sum(correlations)):.12f}, "
             f"F={fixed_sector_fidelity(state, exact):.12f}, "
             f"S_mid={bipartite_entropy_numpy(state):.6f}, "
-            f"bond range={correlations.min():.6f} to {correlations.max():.6f}"
+            f"bond range={correlations.min():.6f} to {correlations.max():.6f}, "
+            f"spin_xi_graph={paper_rows_by_state[state_name]['spin_graph_corr_length']:.3f}"
         )
     print(f"Wrote diagnostics to {results_dir}")
 

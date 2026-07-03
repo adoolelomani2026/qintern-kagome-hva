@@ -9,6 +9,7 @@ Official files:
 - `19site_heisenberg_hva_fast_weighted_p2_reference.metadata.json` - reproducibility metadata.
 - `19site_rvb_subspace.csv` - deterministic 54-covering RVB generalized-eigenproblem summary.
 - `19site_calibration_scan.csv` - current exact calibrated-Hamiltonian reference scan output.
+- `literature_benchmark_comparison.csv` - finite-patch energies converted into physical per-site convention and compared with Depenbrock DMRG / Ahsan rounded values.
 - `calibration_comparison.csv` - method-vs-calibrated-reference comparison table.
 - `calibration_mode_summary.csv` - best calibration row by scan mode.
 - `calibration_top10.csv` - ten closest nontrivial calibrated-Hamiltonian reference rows.
@@ -20,6 +21,8 @@ Diagnostic files:
 - `19site_entropy_profiles.csv`
 - `19site_site_magnetization.csv`
 - `19site_spin_correlation_*.csv`
+- `19site_spin_distance_profile.csv`
+- `19site_paper_diagnostics.csv`
 - `19site_hva_p1_gradients.csv`
 
 Historical result CSVs are excluded from the release zip to avoid confusing the current official story. In the working tree they may live under `results/legacy/`. Smoke-test outputs may live under `results/smoke/` and are not official results.

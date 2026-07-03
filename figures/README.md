@@ -14,6 +14,7 @@ Depth plots:
 - `fidelity_vs_hva_depth.png`
 - `magnetization_vs_hva_depth.png`
 - `entropy_vs_hva_depth.png`
+- `spin_distance_profile.png`
 
 Bond maps:
 
