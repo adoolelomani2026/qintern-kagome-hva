@@ -11,5 +11,6 @@ __pycache__/
 *.fls
 *.fdb_latexmk
 *.synctex.gz
+Scientist Papers/
 results/smoke/
 results/legacy/

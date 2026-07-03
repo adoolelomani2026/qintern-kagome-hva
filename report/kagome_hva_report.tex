@@ -38,7 +38,7 @@ We present a finite-size proof-of-concept for preparing low-energy states of a 1
 
 \section{Introduction}
 
-The spin-$1/2$ Kagome antiferromagnetic Heisenberg model is a canonical frustrated-magnetism benchmark and a central model in the search for quantum spin liquid (QSL) behavior.  The open-boundary 19-site patch studied here is small enough for exact fixed-sector diagonalization yet large enough to expose limitations of purely local dimer product states.
+The spin-$1/2$ Kagome antiferromagnetic Heisenberg model is a canonical frustrated-magnetism benchmark and a central model in the search for quantum spin liquid (QSL) behavior.  Large-scale DMRG studies support a gapped topological spin-liquid ground state and place the thermodynamic-limit energy near $-0.4386(5)$ per site in the physical spin convention \cite{yan2011,depenbrock2012}.  The open-boundary 19-site patch studied here is small enough for exact fixed-sector diagonalization yet large enough to expose limitations of purely local dimer product states.
 
 This report studies the following workflow:
 \[
@@ -54,7 +54,7 @@ The central question is whether improving the variational state structure can ap
 
 \section{Provenance and Scope}
 
-The original Ahsan Kagome-VQE material is used as provenance and methodology context, not as code copied into this workflow.  In particular, it provides the source cross-check for the 19-site Kagome connectivity, context for hardware-efficient Qiskit VQE experiments, and the calibrated-Hamiltonian or defect-triangle strategy.  The present proof-of-concept instead develops a separate no-calibration route based on signed weighted-RVB initialization and shallow edge-colored Heisenberg-HVA refinement.
+The original Ahsan Kagome-VQE material is used as provenance and methodology context, not as code copied into this workflow.  In particular, it provides the source cross-check for the 19-site Kagome connectivity, context for hardware-efficient Qiskit VQE experiments, and the calibrated-Hamiltonian or defect-triangle strategy described in Ref.~\cite{ahsan2025}.  The present proof-of-concept instead develops a separate no-calibration route based on signed weighted-RVB initialization and shallow edge-colored Heisenberg-HVA refinement.
 
 \begin{table}[H]
 \centering
@@ -74,7 +74,7 @@ ODR / IBM Runtime ideas & Future hardware and noise-mitigation extension. \\
 \end{tabular}
 \end{table}
 
-When discussing the original calibrated-Hamiltonian direction, we use cautious language: defect or triangle couplings are increased above the uniform value, with reported calibrated values depending on the patch, Hamiltonian convention, defect set, and scan.  This report states precise calibration values only for scans reproduced in the current repository.
+When discussing the original calibrated-Hamiltonian direction, we use cautious language: defect or triangle couplings are increased above the uniform value, with reported calibrated values depending on the patch, Hamiltonian convention, defect set, and scan.  In the Ahsan workflow this idea appears as defect-triangle Hamiltonian engineering with selected bonds near $J'\approx 2$ and a hardware-efficient RealAmplitudes-style VQE circuit \cite{ahsan2025}.  This report states precise calibration values only for scans reproduced in the current repository.
 
 \section{Model and Benchmark}
 
@@ -94,6 +94,7 @@ The exact reference is the lowest eigenstate in the $n_\downarrow=9$ fixed-$S^z$
 \[
 E_0 = \exactE.
 \]
+In the rounded convention used in the Ahsan calibration table, the corresponding 19-site value appears as approximately $-29.14$ \cite{ahsan2025}.
 All reported fidelities use
 \begin{equation}
 F(\psi)=|\langle \psi_{\rm exact}|\psi\rangle|^2.
@@ -397,6 +398,12 @@ S. Yan, D. A. Huse, and S. R. White,
 ``Spin-liquid ground state of the $S=1/2$ kagome Heisenberg antiferromagnet,''
 \emph{Science} \textbf{332}, 1173--1176 (2011).
 
+\bibitem{depenbrock2012}
+S. Depenbrock, I. P. McCulloch, and U. Schollw\"ock,
+``Nature of the spin liquid ground state of the $S=1/2$ Heisenberg model on the kagome lattice,''
+\emph{Physical Review Letters} \textbf{109}, 067201 (2012);
+arXiv:1205.4858.
+
 \bibitem{peruzzo2014}
 A. Peruzzo \emph{et al.},
 ``A variational eigenvalue solver on a photonic quantum processor,''
@@ -416,6 +423,11 @@ arXiv:1411.4028 (2014).
 Qiskit Community,
 ``Qiskit: An open-source framework for quantum computing,''
 Zenodo, doi:10.5281/zenodo.2562110 (2017).
+
+\bibitem{ahsan2025}
+M. Ahsan,
+``Utility-scale quantum computation of ground-state energy in a 100+ site planar kagome antiferromagnet via Hamiltonian engineering,''
+arXiv:2507.06361v3 (2025).
 
 \end{thebibliography}
 
