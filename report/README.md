@@ -2,13 +2,13 @@
 
 This folder contains two report artifacts:
 
-- `report_1_initial_report.pdf`: short Report 1 / initial project note. This is
-  the lightweight file to send when the request is only for an early idea,
-  paragraph, sketch, or link to the potential solution.
+- `report_1_initial_report.pdf`: five-page Report 1 / initial progress report.
+  This is the file to send for an early project update, potential solution,
+  preliminary evidence, and next-step plan.
 - `kagome_hva_report.pdf`: longer paper-style draft with full details, tables,
   figures, and citations.
 
-Build the short Report 1 from the project root:
+Build Report 1 from the project root:
 
 ```powershell
 pdflatex -interaction=nonstopmode -halt-on-error -output-directory=report report/report_1_initial_report.tex
