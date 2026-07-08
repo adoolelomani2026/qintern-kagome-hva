@@ -168,12 +168,28 @@ The most useful next step is not a blind depth sweep.  The controlled next exper
 U_{\triangle}(\alpha)=\prod_{(i,j)\in \triangle}
 \exp[-i\alpha(X_iX_j+Y_iY_j+Z_iZ_j)].
 \]
-This tests whether calibration information can guide circuit expressibility without becoming Hamiltonian calibration \cite{ahsan2026}.  Figure~\ref{fig:calibration-landscape} explains why this next step is interesting: calibrated reference states can sit much closer to the exact target, so the sensitive local regions found by those scans may be useful circuit-design hints.
+This tests whether calibration information can guide circuit expressibility without becoming Hamiltonian calibration \cite{ahsan2026}.  Figure~\ref{fig:calibration-landscape} is the motivation for this idea, but it needs to be read carefully.  The horizontal axis is the energy error relative to the exact 19-site target, $|E-E_{\rm exact}|$, so points farther left are better.  The vertical axis is the fidelity with the exact state, so points higher up are better.  The ideal location is therefore the upper-left corner: nearly zero energy error and fidelity nearly one.
+
+The colored calibration points are not HVA circuits.  Each one is the exact ground state of a modified Hamiltonian in which selected bonds, edge-color groups, or triangles are given a different coupling $J'$, and that exact state is then compared back to the original uniform-Hamiltonian target.  The red star is different: it is the present no-calibration weighted-RVB plus HVA $p=4$ state.  Its error is about $0.1086$ and its fidelity is about $0.9825$, so it is good compared with the static dimer baseline but still noticeably to the right of the best calibrated reference states.
+
+\begin{center}
+\begin{tabular}{p{0.24\linewidth}p{0.66\linewidth}}
+\toprule
+Plot element & Meaning \\
+\midrule
+Green, blue, orange points & Exact ground states of modified Hamiltonians, used as reference diagnostics. \\
+Red star & Current no-calibration weighted-RVB + HVA $p=4$ state. \\
+Upper-left direction & Better agreement with the exact 19-site target: lower energy error and higher fidelity. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The conclusion is therefore not that the no-calibration HVA already beats calibrated Hamiltonian references.  It does not.  The conclusion is that the calibration scans identify local structures, especially triangles, that can be converted into extra HVA circuit blocks while still evaluating everything against the original unmodified Hamiltonian.
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.60\linewidth]{calibration_energy_vs_fidelity.png}
-\caption{Calibration scan landscape compared with the no-calibration HVA baseline.  These exact reference states are interpreted here as guidance for future ansatz design, not as a replacement for the no-calibration circuit workflow.}
+\caption{Calibration scan landscape compared with the no-calibration HVA baseline.  Left is lower target-energy error and up is higher exact-state fidelity, so the upper-left corner is best.  The green, blue, and orange points are exact reference states from modified Hamiltonians; the red star is the present no-calibration weighted-RVB + HVA $p=4$ result.  The figure is used to choose future local circuit blocks, not to claim that the present HVA already outperforms calibration.}
 \label{fig:calibration-landscape}
 \end{figure}
 

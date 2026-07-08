@@ -352,6 +352,10 @@ Calibrated triangle 6--7--8, $J'=1.02$ & 0.000037 & 0.999966 \\
 \end{tabular}
 \end{table}
 
+Figure~\ref{fig:calibration} plots the same comparison as a landscape.  The horizontal axis is target energy error, $|E-E_{\rm exact}|$, so moving left means better energy agreement with the original 19-site Hamiltonian.  The vertical axis is fidelity with the exact target state, so moving up means better wavefunction agreement.  The best region is therefore the upper-left corner.
+
+The colored scan points in Fig.~\ref{fig:calibration} are exact ground states of modified Hamiltonians: a bond, edge-color group, or triangle has coupling $J'$ instead of the uniform value.  The red star is the current no-calibration weighted-RVB + HVA $p=4$ state.  This distinction matters.  The figure does not show that the present no-calibration circuit beats calibration.  Instead, it shows that small local Hamiltonian changes, especially on triangles, can produce exact reference states extremely close to the target.  Those local structures are useful clues for future HVA blocks, while the target Hamiltonian used for evaluation remains unchanged.
+
 \begin{figure}[H]
 \centering
 \begin{minipage}{0.48\textwidth}
@@ -362,7 +366,7 @@ Calibrated triangle 6--7--8, $J'=1.02$ & 0.000037 & 0.999966 \\
 \centering
 \includegraphics[width=\linewidth]{calibration_energy_vs_fidelity_zoom.png}
 \end{minipage}
-\caption{Calibration scan landscape.  The exact calibrated-Hamiltonian references can sit much closer to the target exact state than the current no-calibration HVA baseline.}
+\caption{Calibration scan landscape.  Left means lower target-energy error and up means higher exact-state fidelity, so the upper-left corner is best.  The colored points are exact ground states of modified Hamiltonians; the red star is the present no-calibration weighted-RVB + HVA $p=4$ result.  The figure motivates calibration-informed ansatz design, not a claim that the current HVA already outperforms calibrated reference states.}
 \label{fig:calibration}
 \end{figure}
 
