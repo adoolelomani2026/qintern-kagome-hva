@@ -1,17 +1,23 @@
 \documentclass[10pt]{article}
 
-\usepackage[margin=0.78in]{geometry}
+\usepackage[margin=0.72in]{geometry}
 \usepackage{amsmath,amssymb}
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage{array}
+\usepackage{float}
 \usepackage{xcolor}
 \usepackage[hidelinks]{hyperref}
 
 \graphicspath{{../figures/}}
 \setlength{\parindent}{0em}
-\setlength{\parskip}{0.45em}
-\renewcommand{\arraystretch}{1.12}
+\setlength{\parskip}{0.34em}
+\setlength{\intextsep}{4pt}
+\setlength{\textfloatsep}{4pt}
+\setlength{\abovecaptionskip}{2pt}
+\setlength{\belowcaptionskip}{0pt}
+\renewcommand{\arraystretch}{1.06}
+\renewcommand{\labelitemi}{\textnormal{-}}
 
 \newcommand{\exactE}{-29.146168109350}
 \newcommand{\hvaE}{-29.037601351802}
@@ -83,11 +89,14 @@ U_{ij}(\theta)=\exp[-i\theta(X_iX_j+Y_iY_j+Z_iZ_j)].
 
 \textbf{Role of calibrated-Hamiltonian work.}  The calibrated-Hamiltonian direction discussed in the project is treated as methodology context and as a source of ansatz-design clues \cite{ahsan2026}.  In this initial no-calibration route, the Hamiltonian used for evaluation is not changed.  Instead, future work can use the information from sensitive triangles or bonds to design better circuit blocks.
 
-\begin{center}
-\includegraphics[width=0.78\linewidth]{bond_map_weighted_rvb.png}
+Figure~\ref{fig:weighted-rvb-bonds} visualizes why the weighted-RVB initializer is a better starting point than a single frozen dimer covering: antiferromagnetic bond weight is distributed across the graph instead of being locked onto only a few perfect singlets.
 
-\small Figure 1. Bond-correlation map for the weighted-RVB initializer.
-\end{center}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.70\linewidth]{bond_map_weighted_rvb.png}
+\caption{Bond-correlation map for the weighted-RVB initializer.  This finite-patch diagnostic shows that antiferromagnetic correlations are distributed over the graph rather than frozen onto one dimer covering.}
+\label{fig:weighted-rvb-bonds}
+\end{figure}
 
 \newpage
 
@@ -106,11 +115,14 @@ For the current best no-calibration run, $p=4$, so the HVA refinement uses 16 pa
 
 \textbf{Why this is a reasonable first route.}  The ansatz is physically matched to the Hamiltonian because every two-qubit gate is a Heisenberg interaction.  It also avoids immediately relying on Hamiltonian calibration.  That keeps the scientific question clean: how far can a better initial state plus physically structured circuit layers go against the original target Hamiltonian?
 
-\begin{center}
-\includegraphics[width=0.82\linewidth]{one_page_summary.png}
+Figure~\ref{fig:summary-dashboard} is a compact dashboard of the current proof-of-concept.  It is not a separate calculation; it summarizes the same exact-benchmark comparison reported in the tables and CSV files.
 
-\small Figure 2. Compact summary of the current finite-size proof-of-concept.
-\end{center}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.72\linewidth]{one_page_summary.png}
+\caption{Compact summary of the current finite-size proof-of-concept.  Weighted-RVB gives the main jump in quality; shallow Heisenberg-HVA layers add no-calibration refinement.}
+\label{fig:summary-dashboard}
+\end{figure}
 
 \newpage
 
@@ -135,7 +147,10 @@ Exact & \exactE & 0.00000000 & 1.000000 \\
 
 The static dimer state is far from the exact state.  The equal RVB state is also poor, which shows that merely superposing dimer coverings is not enough.  The signed weighted-RVB state gives the largest improvement, reaching fidelity about 0.9785.  The Heisenberg-HVA refinement then gives a smaller but useful improvement, reaching fidelity about 0.9825 at $p=4$.
 
-\begin{center}
+Figure~\ref{fig:depth-trends} shows the depth dependence directly.  The energy improves sharply through $p=2$ and then begins to saturate, while the fidelity remains high and changes only modestly beyond the weighted-RVB starting point.
+
+\begin{figure}[H]
+\centering
 \begin{minipage}{0.48\linewidth}
 \includegraphics[width=\linewidth]{energy_vs_hva_depth.png}
 \end{minipage}
@@ -143,9 +158,9 @@ The static dimer state is far from the exact state.  The equal RVB state is also
 \begin{minipage}{0.48\linewidth}
 \includegraphics[width=\linewidth]{fidelity_vs_hva_depth.png}
 \end{minipage}
-
-\small Figure 3. Energy and fidelity versus HVA depth after weighted-RVB initialization.
-\end{center}
+\caption{Energy and fidelity versus HVA depth after weighted-RVB initialization.  Energy improves most through $p=2$ and then begins to saturate, while fidelity remains high.}
+\label{fig:depth-trends}
+\end{figure}
 
 \textbf{Current interpretation.}  The result is promising as a finite-size baseline.  It suggests that improving the state structure matters more than simply adding arbitrary circuit depth.  However, the remaining no-calibration energy gap is still about $0.1086$, so this is not yet a finished solution.
 
@@ -158,13 +173,14 @@ The most useful next step is not a blind depth sweep.  The controlled next exper
 U_{\triangle}(\alpha)=\prod_{(i,j)\in \triangle}
 \exp[-i\alpha(X_iX_j+Y_iY_j+Z_iZ_j)].
 \]
-This tests whether calibration information can guide circuit expressibility without becoming Hamiltonian calibration \cite{ahsan2026}.
+This tests whether calibration information can guide circuit expressibility without becoming Hamiltonian calibration \cite{ahsan2026}.  Figure~\ref{fig:calibration-landscape} explains why this next step is interesting: calibrated reference states can sit much closer to the exact target, so the sensitive local regions found by those scans may be useful circuit-design hints.
 
-\begin{center}
-\includegraphics[width=0.58\linewidth]{calibration_energy_vs_fidelity.png}
-
-\small Figure 4. Calibration scans are useful as reference information and ansatz-design guidance.
-\end{center}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.46\linewidth]{calibration_energy_vs_fidelity.png}
+\caption{Calibration scan landscape compared with the no-calibration HVA baseline.  These exact reference states are interpreted here as guidance for future ansatz design, not as a replacement for the no-calibration circuit workflow.}
+\label{fig:calibration-landscape}
+\end{figure}
 
 \textbf{Limitations at this stage.}
 \begin{itemize}
