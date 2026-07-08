@@ -1,0 +1,56 @@
+\documentclass[10pt]{article}
+
+\usepackage[margin=0.72in]{geometry}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+
+\graphicspath{{../figures/}}
+\setlength{\parindent}{0em}
+\setlength{\parskip}{0.38em}
+
+\title{\textbf{Report 1: Initial Kagome-VQE Project Note}}
+\author{Adel H. Al-Yoorby\\QIntern 2026 Project qi26\_09\\Project context: Dr. Muhammad Ahsan}
+\date{July 2026}
+
+\begin{document}
+\maketitle
+
+\textbf{Potential solution.}
+This project explores a no-calibration route for preparing low-energy states of the 19-site Kagome antiferromagnetic Heisenberg benchmark. Instead of changing the Hamiltonian, the idea is to start from a physically motivated signed weighted-RVB state and then refine it with shallow edge-colored Heisenberg-HVA circuit layers. The exact benchmark is
+\[
+E_0=-29.146168109350,
+\]
+while the current preliminary no-calibration result reaches
+\[
+E=-29.037601351802,\qquad F=0.982518440088
+\]
+at HVA depth $p=4$. This is not a final proof of scalable quantum spin liquid preparation; it is an initial finite-size proof-of-concept showing that better state structure plus Heisenberg-level circuit refinement can move a dimer/RVB state close to the exact 19-site ground state.
+
+\textbf{Sketch.}
+\begin{center}
+\small
+\fbox{19-site Kagome bonds}
+$\rightarrow$
+\fbox{signed weighted RVB}
+$\rightarrow$
+\fbox{Heisenberg-HVA}
+$\rightarrow$
+\fbox{energy/fidelity check}
+\end{center}
+
+\textbf{Current interpretation.}
+The weighted-RVB initializer captures most of the useful finite-size state structure, and the Heisenberg-HVA layers give a smaller but real circuit-compatible refinement. Ahsan-style calibrated-Hamiltonian scans are useful as methodology context and as clues for future ansatz design, but the main current direction is to keep the target Hamiltonian unchanged and improve the circuit/state ansatz.
+
+\textbf{Repository / current work link.}
+\href{https://github.com/adoolelomani2026/qintern-kagome-hva}{https://github.com/adoolelomani2026/qintern-kagome-hva}
+
+\textbf{Next step.}
+The next controlled experiment is to test calibration-informed local circuit blocks, such as adding extra Heisenberg gates on the important triangle $(6,7,8)$ or bond $(14,16)$, while still evaluating against the original unmodified Hamiltonian.
+
+\begin{center}
+\includegraphics[width=0.52\linewidth]{one_page_summary.png}
+\end{center}
+
+\end{document}

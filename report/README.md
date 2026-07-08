@@ -1,9 +1,21 @@
-# Report
+# Reports
 
-This folder contains the paper-style LaTeX report for the frozen 19-site
-weighted-RVB + Heisenberg-HVA proof-of-concept.
+This folder contains two report artifacts:
 
-Build from the project root:
+- `report_1_initial_report.pdf`: short Report 1 / initial project note. This is
+  the lightweight file to send when the request is only for an early idea,
+  paragraph, sketch, or link to the potential solution.
+- `kagome_hva_report.pdf`: longer paper-style draft with full details, tables,
+  figures, and citations.
+
+Build the short Report 1 from the project root:
+
+```powershell
+pdflatex -interaction=nonstopmode -halt-on-error -output-directory=report report/report_1_initial_report.tex
+pdflatex -interaction=nonstopmode -halt-on-error -output-directory=report report/report_1_initial_report.tex
+```
+
+Build the longer paper-style draft from the project root:
 
 ```powershell
 pdflatex -interaction=nonstopmode -halt-on-error -output-directory=report report/kagome_hva_report.tex

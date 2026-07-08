@@ -1,0 +1,61 @@
+{
+  "command": "python.exe scripts/run_19site_triangle_boosted_hva.py --init weighted --triangle 6,7,8 --max-layers 2 --method Nelder-Mead --maxiter 600 --restarts 2 --start-scale 0.04 --auto-tag",
+  "seed": 123,
+  "method": "Nelder-Mead",
+  "maxiter": 600,
+  "base_deterministic_starts": 8,
+  "base_hva_warm_starts": true,
+  "warm_start_candidates_per_depth_after_p1": 2,
+  "random_restarts": 2,
+  "start_strategy": "small-angle deterministic + base HVA warm starts + depth warm starts + optional random restarts",
+  "start_scale": 0.04,
+  "bounded": false,
+  "bound": null,
+  "max_layers": 2,
+  "initialization": "weighted",
+  "weighted_state": "results/19site_weighted_rvb_state_n54.npz",
+  "reference_energy": -29.146168109350135,
+  "current_hva_p4_energy": -29.037601351802,
+  "pauli_scale": 1.0,
+  "hamiltonian_convention": "target Hamiltonian unchanged: unscaled Pauli sum_<ij>(XX+YY+ZZ)",
+  "ansatz_extra_blocks": {
+    "triangle": [
+      6,
+      7,
+      8
+    ],
+    "triangle_bonds": [
+      [
+        6,
+        7
+      ],
+      [
+        6,
+        8
+      ],
+      [
+        7,
+        8
+      ]
+    ],
+    "bond": null
+  },
+  "bond_file": "data/19site_bonds.csv",
+  "base_hva_csv": "results/19site_heisenberg_hva_fast_weighted_p4_neldermead_mi800_r6_seed123_20260703_012608.csv",
+  "output_csv": "results/19site_triangle_boosted_hva_weighted_triangle_6-7-8_p2_neldermead_mi600_r2_seed123_20260705_011014.csv",
+  "history_csv": "results/19site_triangle_boosted_hva_weighted_triangle_6-7-8_p2_neldermead_mi600_r2_seed123_20260705_011014_history.csv",
+  "optimizer_backend": "fixed-Sz sector cached NumPy Heisenberg kernels",
+  "elapsed_seconds": 1905.4167878627777,
+  "blas_threads": {
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "NUMEXPR_NUM_THREADS": "1"
+  },
+  "versions": {
+    "python": "3.14.3",
+    "numpy": "2.4.3",
+    "scipy": "1.17.1",
+    "qiskit": "2.4.1"
+  }
+}
