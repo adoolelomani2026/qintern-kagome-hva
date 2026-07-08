@@ -68,7 +68,7 @@ $\rightarrow$
 
 \section*{2. Background and Benchmark}
 
-The Kagome antiferromagnetic Heisenberg model is a standard frustrated-magnetism benchmark because its geometry makes simple classical ordering difficult.  In the thermodynamic limit, this model is closely connected to quantum spin liquid physics.  Here the project uses a smaller 19-site open-boundary patch because it is still large enough to show nontrivial frustration while remaining small enough for exact fixed-$S^z$ diagonalization.
+The Kagome antiferromagnetic Heisenberg model is a standard frustrated-magnetism benchmark because its geometry makes simple classical ordering difficult.  In the thermodynamic limit, this model is closely connected to quantum spin liquid physics, with DMRG studies supporting a spin-liquid ground-state picture \cite{yan2011,depenbrock2012}.  Here the project uses a smaller 19-site open-boundary patch because it is still large enough to show nontrivial frustration while remaining small enough for exact fixed-$S^z$ diagonalization.
 
 The active benchmark is the 19-site graph and bond list confirmed from the project provenance material.  The calculation is performed in the fixed sector with $n_\downarrow=9$, whose Hilbert-space dimension is
 \[
@@ -81,7 +81,7 @@ This is large enough that naive full statevector work is inconvenient, but small
 U_{ij}(\theta)=\exp[-i\theta(X_iX_j+Y_iY_j+Z_iZ_j)].
 \]
 
-\textbf{Role of calibrated-Hamiltonian work.}  The calibrated-Hamiltonian direction discussed in the project is treated as methodology context and as a source of ansatz-design clues.  In this initial no-calibration route, the Hamiltonian used for evaluation is not changed.  Instead, future work can use the information from sensitive triangles or bonds to design better circuit blocks.
+\textbf{Role of calibrated-Hamiltonian work.}  The calibrated-Hamiltonian direction discussed in the project is treated as methodology context and as a source of ansatz-design clues \cite{ahsan2026}.  In this initial no-calibration route, the Hamiltonian used for evaluation is not changed.  Instead, future work can use the information from sensitive triangles or bonds to design better circuit blocks.
 
 \begin{center}
 \includegraphics[width=0.78\linewidth]{bond_map_weighted_rvb.png}
@@ -97,7 +97,7 @@ The current workflow has two main stages.
 
 \textbf{Stage 1: weighted RVB initialization.}  The code enumerates 54 maximum dimer coverings on the 19-site graph.  Instead of taking an equal positive superposition, it solves a classical generalized eigenproblem in the dimer-covering subspace.  This produces a signed weighted-RVB state.  The equal RVB state is not enough; the signs and amplitudes are important.
 
-\textbf{Stage 2: edge-colored Heisenberg-HVA refinement.}  The 30 graph bonds are partitioned into four disjoint edge-color groups.  Within each group, gates act on disjoint bonds and can be applied in parallel.  A depth-$p$ ansatz therefore uses only $4p$ HVA parameters:
+\textbf{Stage 2: edge-colored Heisenberg-HVA refinement.}  The 30 graph bonds are partitioned into four disjoint edge-color groups.  Within each group, gates act on disjoint bonds and can be applied in parallel.  This follows the broader variational quantum eigensolver and hardware-efficient ansatz philosophy, but uses Heisenberg interaction gates matched to the model \cite{peruzzo2014,kandala2017}.  A depth-$p$ ansatz therefore uses only $4p$ HVA parameters:
 \[
 U_p=\prod_{\ell=1}^{p}\prod_{c=1}^{4}\prod_{(i,j)\in E_c}
 \exp[-i\theta_{\ell,c}(X_iX_j+Y_iY_j+Z_iZ_j)].
@@ -158,7 +158,7 @@ The most useful next step is not a blind depth sweep.  The controlled next exper
 U_{\triangle}(\alpha)=\prod_{(i,j)\in \triangle}
 \exp[-i\alpha(X_iX_j+Y_iY_j+Z_iZ_j)].
 \]
-This tests whether calibration information can guide circuit expressibility without becoming Hamiltonian calibration.
+This tests whether calibration information can guide circuit expressibility without becoming Hamiltonian calibration \cite{ahsan2026}.
 
 \begin{center}
 \includegraphics[width=0.58\linewidth]{calibration_energy_vs_fidelity.png}
@@ -175,6 +175,35 @@ This tests whether calibration information can guide circuit expressibility with
 \item This report should be read as a progress report and potential solution direction, not as a final proof.
 \end{itemize}
 
-\textbf{Short reference context.}  The project is motivated by Kagome Heisenberg and quantum spin liquid work such as Yan, Huse, and White (Science, 2011) and Depenbrock, McCulloch, and Schollw\"ock (PRL, 2012), and by the calibrated-Hamiltonian VQE direction in M. Ahsan, ``Utility-scale Experimental Quantum Computation with Hardware Efficient Ans\"atze and Calibrated Hamiltonian,'' \emph{ACM Transactions on Quantum Computing} (2026), doi:10.1145/3815786.
+\small
+\begin{thebibliography}{9}
+\setlength{\itemsep}{0.08em}
+
+\bibitem{yan2011}
+S. Yan, D. A. Huse, and S. R. White,
+``Spin-liquid ground state of the $S=1/2$ kagome Heisenberg antiferromagnet,''
+\emph{Science} \textbf{332}, 1173--1176 (2011).
+
+\bibitem{depenbrock2012}
+S. Depenbrock, I. P. McCulloch, and U. Schollw\"ock,
+``Nature of the spin liquid ground state of the $S=1/2$ Heisenberg model on the kagome lattice,''
+\emph{Physical Review Letters} \textbf{109}, 067201 (2012).
+
+\bibitem{peruzzo2014}
+A. Peruzzo \emph{et al.},
+``A variational eigenvalue solver on a photonic quantum processor,''
+\emph{Nature Communications} \textbf{5}, 4213 (2014).
+
+\bibitem{kandala2017}
+A. Kandala, A. Mezzacapo, K. Temme, M. Takita, M. Brink, J. M. Chow, and J. M. Gambetta,
+``Hardware-efficient variational quantum eigensolver for small molecules and quantum magnets,''
+\emph{Nature} \textbf{549}, 242--246 (2017).
+
+\bibitem{ahsan2026}
+M. Ahsan,
+``Utility-scale Experimental Quantum Computation with Hardware Efficient Ans\"atze and Calibrated Hamiltonian,''
+\emph{ACM Transactions on Quantum Computing} (2026), doi:10.1145/3815786.
+
+\end{thebibliography}
 
 \end{document}
