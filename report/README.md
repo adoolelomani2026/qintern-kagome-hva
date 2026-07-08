@@ -2,9 +2,9 @@
 
 This folder contains two report artifacts:
 
-- `report_1_initial_report.pdf`: five-page Report 1 / initial progress report.
-  This is the file to send for an early project update, potential solution,
-  preliminary evidence, and next-step plan.
+- `report_1_initial_report.pdf`: Report 1 / initial progress report. This is
+  the file to send for an early project update, potential solution,
+  preliminary evidence, figure interpretation, references, and next-step plan.
 - `kagome_hva_report.pdf`: longer paper-style draft with full details, tables,
   figures, and citations.
 

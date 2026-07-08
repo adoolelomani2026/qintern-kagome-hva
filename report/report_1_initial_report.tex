@@ -1,22 +1,17 @@
 \documentclass[10pt]{article}
 
-\usepackage[margin=0.72in]{geometry}
+\usepackage[margin=0.85in]{geometry}
 \usepackage{amsmath,amssymb}
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage{array}
-\usepackage{float}
 \usepackage{xcolor}
 \usepackage[hidelinks]{hyperref}
 
 \graphicspath{{../figures/}}
 \setlength{\parindent}{0em}
-\setlength{\parskip}{0.34em}
-\setlength{\intextsep}{4pt}
-\setlength{\textfloatsep}{4pt}
-\setlength{\abovecaptionskip}{2pt}
-\setlength{\belowcaptionskip}{0pt}
-\renewcommand{\arraystretch}{1.06}
+\setlength{\parskip}{0.5em}
+\renewcommand{\arraystretch}{1.12}
 \renewcommand{\labelitemi}{\textnormal{-}}
 
 \newcommand{\exactE}{-29.146168109350}
@@ -91,9 +86,9 @@ U_{ij}(\theta)=\exp[-i\theta(X_iX_j+Y_iY_j+Z_iZ_j)].
 
 Figure~\ref{fig:weighted-rvb-bonds} visualizes why the weighted-RVB initializer is a better starting point than a single frozen dimer covering: antiferromagnetic bond weight is distributed across the graph instead of being locked onto only a few perfect singlets.
 
-\begin{figure}[H]
+\begin{figure}[htbp]
 \centering
-\includegraphics[width=0.70\linewidth]{bond_map_weighted_rvb.png}
+\includegraphics[width=0.78\linewidth]{bond_map_weighted_rvb.png}
 \caption{Bond-correlation map for the weighted-RVB initializer.  This finite-patch diagnostic shows that antiferromagnetic correlations are distributed over the graph rather than frozen onto one dimer covering.}
 \label{fig:weighted-rvb-bonds}
 \end{figure}
@@ -117,9 +112,9 @@ For the current best no-calibration run, $p=4$, so the HVA refinement uses 16 pa
 
 Figure~\ref{fig:summary-dashboard} is a compact dashboard of the current proof-of-concept.  It is not a separate calculation; it summarizes the same exact-benchmark comparison reported in the tables and CSV files.
 
-\begin{figure}[H]
+\begin{figure}[htbp]
 \centering
-\includegraphics[width=0.72\linewidth]{one_page_summary.png}
+\includegraphics[width=0.82\linewidth]{one_page_summary.png}
 \caption{Compact summary of the current finite-size proof-of-concept.  Weighted-RVB gives the main jump in quality; shallow Heisenberg-HVA layers add no-calibration refinement.}
 \label{fig:summary-dashboard}
 \end{figure}
@@ -149,7 +144,7 @@ The static dimer state is far from the exact state.  The equal RVB state is also
 
 Figure~\ref{fig:depth-trends} shows the depth dependence directly.  The energy improves sharply through $p=2$ and then begins to saturate, while the fidelity remains high and changes only modestly beyond the weighted-RVB starting point.
 
-\begin{figure}[H]
+\begin{figure}[htbp]
 \centering
 \begin{minipage}{0.48\linewidth}
 \includegraphics[width=\linewidth]{energy_vs_hva_depth.png}
@@ -175,9 +170,9 @@ U_{\triangle}(\alpha)=\prod_{(i,j)\in \triangle}
 \]
 This tests whether calibration information can guide circuit expressibility without becoming Hamiltonian calibration \cite{ahsan2026}.  Figure~\ref{fig:calibration-landscape} explains why this next step is interesting: calibrated reference states can sit much closer to the exact target, so the sensitive local regions found by those scans may be useful circuit-design hints.
 
-\begin{figure}[H]
+\begin{figure}[htbp]
 \centering
-\includegraphics[width=0.46\linewidth]{calibration_energy_vs_fidelity.png}
+\includegraphics[width=0.60\linewidth]{calibration_energy_vs_fidelity.png}
 \caption{Calibration scan landscape compared with the no-calibration HVA baseline.  These exact reference states are interpreted here as guidance for future ansatz design, not as a replacement for the no-calibration circuit workflow.}
 \label{fig:calibration-landscape}
 \end{figure}
