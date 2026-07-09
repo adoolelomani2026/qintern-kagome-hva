@@ -3,9 +3,14 @@
 Main presentation figure:
 
 - `one_page_summary.png`
+- `workflow_flowchart.png`
 
 The main comparison panel uses error vs exact rather than raw energy so the
 RVB-to-HVA improvement is visible at presentation scale.
+
+`workflow_flowchart.png` summarizes the proof-of-concept flow: 19-site graph,
+weighted-RVB initializer, Heisenberg-HVA refinement, exact diagnostics, and
+calibration-informed future circuit design.
 
 Depth plots:
 

@@ -56,6 +56,15 @@ This report studies the following workflow:
 \]
 The central question is whether improving the variational state structure can approach the exact 19-site ground state without relying on Hamiltonian calibration.  The answer in this proof-of-concept is cautiously positive: the no-calibration HVA improves energy, fidelity, magnetization, entropy, and bond-correlation diagnostics, but it remains above the best exact calibrated-Hamiltonian reference states.
 
+Figure~\ref{fig:workflow-flowchart} gives the project flow.  The upper path is the main no-calibration workflow: start from the 19-site bond graph, construct the signed weighted-RVB initializer, refine it with edge-colored Heisenberg-HVA layers, and evaluate energy, fidelity, and correlation diagnostics.  The lower path is the reference workflow: exact diagonalization supplies $E_0$ and $\psi_{\rm exact}$, while calibration scans are used as diagnostic reference states and as design feedback for future local HVA blocks.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{workflow_flowchart.png}
+\caption{Project flowchart.  The main proof-of-concept keeps the target Hamiltonian fixed and improves the variational state through weighted-RVB initialization followed by Heisenberg-HVA refinement.  Exact diagonalization provides the benchmark, and calibration scans provide reference-state and ansatz-design clues rather than replacing the no-calibration workflow.}
+\label{fig:workflow-flowchart}
+\end{figure}
+
 \section{Provenance and Scope}
 
 The original Ahsan Kagome-VQE material is used as provenance and methodology context, not as code copied into this workflow.  In particular, it provides the source cross-check for the 19-site Kagome connectivity, context for hardware-efficient Qiskit VQE experiments, and the calibrated-Hamiltonian or defect-triangle strategy described in Ref.~\cite{ahsan2026}.  The present proof-of-concept instead develops a separate no-calibration route based on signed weighted-RVB initialization and shallow edge-colored Heisenberg-HVA refinement.

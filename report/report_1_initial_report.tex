@@ -49,16 +49,14 @@ E=\hvaE,\qquad F=\hvaF
 \]
 at HVA depth $p=4$.
 
-\begin{center}
-\small
-\fbox{19-site Kagome graph}
-$\rightarrow$
-\fbox{signed weighted RVB}
-$\rightarrow$
-\fbox{Heisenberg-HVA}
-$\rightarrow$
-\fbox{exact energy/fidelity check}
-\end{center}
+Figure~\ref{fig:workflow-flowchart} summarizes the project flow.  The main route is the no-calibration path from the 19-site bond graph to weighted-RVB initialization, Heisenberg-HVA refinement, and exact benchmark diagnostics.  The lower branch shows the exact-reference and calibration-scan information used to interpret results and design the next local HVA blocks.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{workflow_flowchart.png}
+\caption{Project flowchart.  The upper path is the main no-calibration workflow.  The lower path supplies the exact benchmark and calibration-reference diagnostics.  Calibration scans are treated as design feedback for future triangle or bond HVA blocks, not as a replacement for the fixed target Hamiltonian.}
+\label{fig:workflow-flowchart}
+\end{figure}
 
 \textbf{Repository / current work link.}\\
 \href{https://github.com/adoolelomani2026/qintern-kagome-hva}{https://github.com/adoolelomani2026/qintern-kagome-hva}

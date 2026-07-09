@@ -11,6 +11,7 @@ matplotlib.use("Agg")
 
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.patches import FancyArrowPatch, FancyBboxPatch
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -334,6 +335,142 @@ def plot_calibration_scatter(final_rows: list[dict[str, str]], output: Path, *, 
     plt.close(fig)
 
 
+def plot_workflow_flowchart(output: Path) -> None:
+    fig, ax = plt.subplots(figsize=(11.2, 5.6))
+    ax.set_xlim(0, 12.4)
+    ax.set_ylim(0, 6)
+    ax.axis("off")
+
+    def add_box(
+        xy: tuple[float, float],
+        size: tuple[float, float],
+        text: str,
+        *,
+        facecolor: str,
+        edgecolor: str = "#2f3b46",
+        fontsize: int = 10,
+    ) -> tuple[float, float, float, float]:
+        x, y = xy
+        w, h = size
+        box = FancyBboxPatch(
+            (x, y),
+            w,
+            h,
+            boxstyle="round,pad=0.035,rounding_size=0.08",
+            linewidth=1.4,
+            edgecolor=edgecolor,
+            facecolor=facecolor,
+        )
+        ax.add_patch(box)
+        ax.text(
+            x + w / 2,
+            y + h / 2,
+            text,
+            ha="center",
+            va="center",
+            fontsize=fontsize,
+            color="#17212b",
+            linespacing=1.18,
+        )
+        return (x, y, w, h)
+
+    def right(box: tuple[float, float, float, float]) -> tuple[float, float]:
+        x, y, w, h = box
+        return (x + w, y + h / 2)
+
+    def left(box: tuple[float, float, float, float]) -> tuple[float, float]:
+        x, y, _, h = box
+        return (x, y + h / 2)
+
+    def top(box: tuple[float, float, float, float]) -> tuple[float, float]:
+        x, y, w, h = box
+        return (x + w / 2, y + h)
+
+    def bottom(box: tuple[float, float, float, float]) -> tuple[float, float]:
+        x, y, w, _ = box
+        return (x + w / 2, y)
+
+    def arrow(start: tuple[float, float], end: tuple[float, float], *, color: str = "#384a5c") -> None:
+        ax.add_patch(
+            FancyArrowPatch(
+                start,
+                end,
+                arrowstyle="-|>",
+                mutation_scale=13,
+                linewidth=1.5,
+                color=color,
+                shrinkA=5,
+                shrinkB=5,
+            )
+        )
+
+    ax.text(
+        0.3,
+        5.55,
+        "Project workflow",
+        fontsize=15,
+        fontweight="bold",
+        color="#17212b",
+    )
+    ax.text(
+        0.3,
+        5.18,
+        "Main route keeps the target Hamiltonian fixed; calibration scans are used only as design clues.",
+        fontsize=9.5,
+        color="#4b5563",
+    )
+
+    graph = add_box((0.35, 3.55), (2.05, 0.95), "19-site Kagome\nbond graph", facecolor="#e8f1fb")
+    dimers = add_box((2.85, 3.55), (2.05, 0.95), "54 maximum\ndimer coverings", facecolor="#eaf7ed")
+    rvb = add_box((5.35, 3.55), (2.05, 0.95), "Signed weighted\nRVB initializer", facecolor="#eaf7ed")
+    hva = add_box((7.65, 3.55), (2.05, 0.95), "Edge-colored\nHeisenberg HVA", facecolor="#fff3d8")
+    diagnostics = add_box(
+        (10.25, 3.4),
+        (1.75, 1.25),
+        "Energy\nFidelity\nCorrelations",
+        facecolor="#f3e8ff",
+        fontsize=9.5,
+    )
+
+    exact = add_box((0.85, 1.55), (2.4, 0.95), "Exact fixed-Sz\nbenchmark", facecolor="#f2f4f7")
+    compare = add_box(
+        (4.0, 1.55),
+        (2.6, 0.95),
+        "Compare to\nE0 and psi_exact",
+        facecolor="#f2f4f7",
+    )
+    calib = add_box(
+        (7.25, 1.55),
+        (2.65, 0.95),
+        "Calibration scans\nas reference states",
+        facecolor="#fdecec",
+    )
+    next_step = add_box(
+        (10.05, 0.65),
+        (1.9, 1.15),
+        "Next: local\ntriangle/bond\nHVA blocks",
+        facecolor="#fdecec",
+        fontsize=9.2,
+    )
+
+    for first, second in [(graph, dimers), (dimers, rvb), (rvb, hva), (hva, diagnostics)]:
+        arrow(right(first), left(second))
+
+    arrow(bottom(graph), top(exact))
+    arrow(right(exact), left(compare))
+    arrow(bottom(diagnostics), top(compare))
+    arrow(right(compare), left(calib))
+    arrow(right(calib), left(next_step), color="#9b2c2c")
+    arrow(top(next_step), bottom(hva), color="#9b2c2c")
+
+    ax.text(7.98, 2.72, "same target Hamiltonian", fontsize=8.5, color="#4b5563")
+    ax.text(9.88, 2.25, "design feedback", fontsize=8.5, color="#9b2c2c")
+
+    fig.tight_layout()
+    fig.savefig(output, dpi=180)
+    plt.close(fig)
+
+
 def main() -> None:
     results_dir = PROJECT_ROOT / "results"
     figures_dir = PROJECT_ROOT / "figures"
@@ -392,6 +529,7 @@ def main() -> None:
     )
     plot_calibration_scatter(final_rows, figures_dir / "calibration_energy_vs_fidelity.png")
     plot_calibration_scatter(final_rows, figures_dir / "calibration_energy_vs_fidelity_zoom.png", zoom=True)
+    plot_workflow_flowchart(figures_dir / "workflow_flowchart.png")
     print(f"Wrote figures to {figures_dir}")
 
 
