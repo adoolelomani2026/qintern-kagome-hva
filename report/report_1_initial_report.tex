@@ -49,12 +49,12 @@ E=\hvaE,\qquad F=\hvaF
 \]
 at HVA depth $p=4$.
 
-Figure~\ref{fig:workflow-flowchart} summarizes the project in four steps: define the fixed 19-site target Hamiltonian, build a signed weighted-RVB starting state, refine it with edge-colored Heisenberg-HVA layers, and evaluate the result against exact energy, fidelity, and correlation diagnostics.  The two support boxes underneath are not extra claims; exact diagonalization supplies the benchmark, while calibration scans only suggest future local HVA blocks.
+Figure~\ref{fig:workflow-flowchart} summarizes the project as two connected branches.  The exact-reference branch diagonalizes the fixed 19-site Hamiltonian to obtain $E_0$ and $|\psi_0\rangle$.  The ansatz branch builds a weighted-RVB state, refines it with Heisenberg-HVA layers, and then compares the resulting trial state to the exact reference using energy, fidelity, and bond correlations.  The dashed calibration-scan box is only future design guidance.
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\linewidth]{workflow_flowchart.png}
-\caption{Project flowchart.  The numbered boxes are the actual no-calibration workflow.  Exact diagonalization supplies the benchmark for the evaluation step.  Calibration scans are included only as future design guidance for local triangle or bond HVA blocks; they do not replace the fixed target Hamiltonian.}
+\caption{Project schematic.  The target Hamiltonian is fixed.  The upper branch produces the exact reference state, while the lower branch produces the variational trial state through weighted-RVB initialization and Heisenberg-HVA refinement.  Calibration scans are shown with a dashed box because they are future design guidance, not part of the present no-calibration claim.}
 \label{fig:workflow-flowchart}
 \end{figure}
 

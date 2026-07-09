@@ -56,12 +56,12 @@ This report studies the following workflow:
 \]
 The central question is whether improving the variational state structure can approach the exact 19-site ground state without relying on Hamiltonian calibration.  The answer in this proof-of-concept is cautiously positive: the no-calibration HVA improves energy, fidelity, magnetization, entropy, and bond-correlation diagnostics, but it remains above the best exact calibrated-Hamiltonian reference states.
 
-Figure~\ref{fig:workflow-flowchart} gives the project flow as four numbered steps: define the fixed 19-site Kagome target Hamiltonian, construct the signed weighted-RVB initializer, refine it with edge-colored Heisenberg-HVA layers, and evaluate energy, fidelity, and correlation diagnostics.  The support boxes clarify what is used for interpretation: exact diagonalization supplies $E_0$ and $\psi_{\rm exact}$, while calibration scans are treated only as diagnostic reference states and design feedback for future local HVA blocks.
+Figure~\ref{fig:workflow-flowchart} gives the project flow as two connected branches.  The exact-reference branch diagonalizes the fixed 19-site Kagome Hamiltonian to obtain $E_0$ and $|\psi_0\rangle$.  The ansatz branch constructs a signed weighted-RVB initializer, refines it with edge-colored Heisenberg-HVA layers, and compares the resulting trial state with the exact reference through energy, fidelity, and correlation diagnostics.  The dashed calibration-scan box is included only as design feedback for future local HVA blocks.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{workflow_flowchart.png}
-\caption{Project flowchart.  The numbered boxes are the actual no-calibration workflow: fixed target Hamiltonian, weighted-RVB starting state, Heisenberg-HVA refinement, and exact-state evaluation.  Exact diagonalization provides the benchmark.  Calibration scans provide reference-state and ansatz-design clues, not a replacement for the no-calibration workflow.}
+\caption{Project schematic.  The target Hamiltonian is fixed throughout.  The upper branch produces the exact reference state, and the lower branch produces the no-calibration variational trial state through weighted-RVB initialization and Heisenberg-HVA refinement.  Calibration scans are shown with a dashed box because they are future ansatz-design guidance, not a replacement for the present no-calibration workflow.}
 \label{fig:workflow-flowchart}
 \end{figure}
 

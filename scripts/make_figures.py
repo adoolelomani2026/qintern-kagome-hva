@@ -336,79 +336,52 @@ def plot_calibration_scatter(final_rows: list[dict[str, str]], output: Path, *, 
 
 
 def plot_workflow_flowchart(output: Path) -> None:
-    fig, ax = plt.subplots(figsize=(12.0, 5.9))
-    ax.set_xlim(0, 12)
-    ax.set_ylim(0, 6.2)
+    fig, ax = plt.subplots(figsize=(11.2, 4.1))
+    ax.set_xlim(0, 11.4)
+    ax.set_ylim(0, 4.35)
     ax.axis("off")
 
-    def add_step_box(
-        x: float,
-        y: float,
-        number: str,
-        title: str,
-        detail: str,
-        *,
-        width: float = 2.55,
-        height: float = 1.35,
-        facecolor: str,
-    ) -> tuple[float, float, float, float]:
-        box = FancyBboxPatch(
-            (x, y),
-            width,
-            height,
-            boxstyle="round,pad=0.045,rounding_size=0.05",
-            linewidth=1.35,
-            edgecolor="#24313f",
-            facecolor=facecolor,
-        )
-        ax.add_patch(box)
-        ax.text(x + 0.18, y + height - 0.26, number, ha="left", va="top", fontsize=10.5, fontweight="bold", color="#111827")
-        ax.text(
-            x + 0.18,
-            y + height - 0.58,
-            title,
-            ha="left",
-            va="top",
-            fontsize=10.5,
-            fontweight="bold",
-            color="#17212b",
-        )
-        ax.text(
-            x + 0.18,
-            y + height - 0.92,
-            detail,
-            ha="left",
-            va="top",
-            fontsize=8.7,
-            color="#374151",
-            linespacing=1.18,
-        )
-        return (x, y, width, height)
-
-    def add_note_box(
+    def add_box(
         x: float,
         y: float,
         title: str,
         detail: str,
         *,
         width: float,
-        height: float,
-        facecolor: str,
+        height: float = 0.72,
         dashed: bool = False,
     ) -> tuple[float, float, float, float]:
         box = FancyBboxPatch(
             (x, y),
             width,
             height,
-            boxstyle="round,pad=0.04,rounding_size=0.05",
-            linewidth=1.2,
+            boxstyle="round,pad=0.025,rounding_size=0.025",
+            linewidth=1.05,
             linestyle="--" if dashed else "-",
-            edgecolor="#4b5563",
-            facecolor=facecolor,
+            edgecolor="black",
+            facecolor="white",
         )
         ax.add_patch(box)
-        ax.text(x + 0.18, y + height - 0.27, title, ha="left", va="top", fontsize=9.5, fontweight="bold", color="#111827")
-        ax.text(x + 0.18, y + height - 0.62, detail, ha="left", va="top", fontsize=8.4, color="#374151", linespacing=1.16)
+        ax.text(
+            x + width / 2,
+            y + height * 0.63,
+            title,
+            ha="center",
+            va="center",
+            fontsize=8.6,
+            fontweight="bold",
+            color="black",
+        )
+        ax.text(
+            x + width / 2,
+            y + height * 0.28,
+            detail,
+            ha="center",
+            va="center",
+            fontsize=7.4,
+            color="black",
+            linespacing=1.08,
+        )
         return (x, y, width, height)
 
     def right(box: tuple[float, float, float, float]) -> tuple[float, float]:
@@ -431,7 +404,7 @@ def plot_workflow_flowchart(output: Path) -> None:
         start: tuple[float, float],
         end: tuple[float, float],
         *,
-        color: str = "#334155",
+        color: str = "black",
         dashed: bool = False,
     ) -> None:
         ax.add_patch(
@@ -439,8 +412,8 @@ def plot_workflow_flowchart(output: Path) -> None:
                 start,
                 end,
                 arrowstyle="-|>",
-                mutation_scale=13,
-                linewidth=1.5,
+                mutation_scale=10,
+                linewidth=1.0,
                 color=color,
                 linestyle="--" if dashed else "-",
                 shrinkA=5,
@@ -448,92 +421,30 @@ def plot_workflow_flowchart(output: Path) -> None:
             )
         )
 
-    ax.text(
-        0.25,
-        5.72,
-        "How the project works",
-        fontsize=15,
-        fontweight="bold",
-        color="#17212b",
-    )
-    ax.text(
-        0.25,
-        5.36,
-        "The main result changes the trial state, not the target Hamiltonian.",
-        fontsize=9.5,
-        color="#4b5563",
-    )
-    ax.text(0.25, 4.93, "MAIN WORKFLOW", fontsize=8.8, fontweight="bold", color="#475569")
+    hamiltonian = add_box(0.35, 3.04, "19-site Kagome Hamiltonian", r"$H=\sum_{\langle i,j\rangle}(XX+YY+ZZ)$", width=2.45)
 
-    target = add_step_box(
-        0.25,
-        3.45,
-        "1",
-        "Target problem",
-        "19-site Kagome graph\nuniform Heisenberg H",
-        facecolor="#f8fafc",
-    )
-    rvb = add_step_box(
-        3.10,
-        3.45,
-        "2",
-        "Starting state",
-        "signed weighted-RVB\nfrom 54 dimer coverings",
-        facecolor="#f8fafc",
-    )
-    hva = add_step_box(
-        5.95,
-        3.45,
-        "3",
-        "Circuit refinement",
-        "edge-colored Heisenberg-HVA\nwith p = 1, 2, 3, 4",
-        facecolor="#f8fafc",
-    )
-    evaluate = add_step_box(
-        8.80,
-        3.45,
-        "4",
-        "Evaluation",
-        "energy, fidelity,\nbond correlations",
-        facecolor="#f8fafc",
-    )
+    diagonalize = add_box(3.35, 3.04, "Sparse diagonalization", r"$E_0,\ |\psi_0\rangle$ in fixed $S^z$", width=2.35)
+    metrics = add_box(9.65, 1.35, "Compare with exact", r"$E,\ F,\ C_{ij}$", width=1.55)
+    arrow(right(hamiltonian), left(diagonalize))
+    arrow(right(diagonalize), top(metrics))
 
-    for first, second in [(target, rvb), (rvb, hva), (hva, evaluate)]:
+    coverings = add_box(0.35, 1.35, "Dimer-covering subspace", "54 maximum coverings", width=2.25)
+    rvb = add_box(3.00, 1.35, "Weighted RVB", "signed amplitudes from\nclassical subspace solve", width=2.10)
+    hva = add_box(5.55, 1.35, "Heisenberg-HVA", "edge-colored layers\n$p=1,\\ldots,4$", width=2.00)
+    trial = add_box(7.90, 1.35, "Trial state", r"$|\psi_p\rangle$", width=1.30)
+    arrow(bottom(hamiltonian), top(coverings))
+    for first, second in [(coverings, rvb), (rvb, hva), (hva, trial), (trial, metrics)]:
         arrow(right(first), left(second))
 
-    ax.text(0.25, 2.36, "REFERENCE AND NEXT STEP", fontsize=8.8, fontweight="bold", color="#475569")
-    exact = add_note_box(
-        8.80,
-        1.25,
-        "Exact benchmark",
-        "Sparse diagonalization gives\nE0 and psi_exact for step 4.",
-        width=2.55,
-        height=1.05,
-        facecolor="#f1f5f9",
-    )
-    calibration = add_note_box(
-        5.95,
-        1.10,
+    calibration = add_box(
+        5.55,
+        0.18,
         "Calibration scans",
-        "Modified-Hamiltonian exact states\nidentify useful triangles/bonds.\nThey are design clues, not the claim.",
-        width=2.55,
-        height=1.35,
-        facecolor="#f1f5f9",
+        "separate reference;\nfuture local block clues",
+        width=2.00,
         dashed=True,
     )
-
-    arrow(top(exact), bottom(evaluate), color="#64748b")
-    arrow(top(calibration), bottom(hva), color="#64748b", dashed=True)
-    ax.text(6.42, 2.60, "future block design", fontsize=8.2, color="#64748b")
-    ax.text(9.27, 2.54, "compare against exact", fontsize=8.2, color="#64748b")
-
-    ax.text(
-        0.25,
-        0.55,
-        "Current interpretation: weighted-RVB gives the large improvement; HVA gives a smaller no-calibration refinement; calibration scans suggest what to try next.",
-        fontsize=8.9,
-        color="#334155",
-    )
+    arrow(top(calibration), bottom(hva), dashed=True)
 
     fig.tight_layout()
     fig.savefig(output, dpi=180)
