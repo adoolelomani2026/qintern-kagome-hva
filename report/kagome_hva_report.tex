@@ -56,12 +56,12 @@ This report studies the following workflow:
 \]
 The central question is whether improving the variational state structure can approach the exact 19-site ground state without relying on Hamiltonian calibration.  The answer in this proof-of-concept is cautiously positive: the no-calibration HVA improves energy, fidelity, magnetization, entropy, and bond-correlation diagnostics, but it remains above the best exact calibrated-Hamiltonian reference states.
 
-Figure~\ref{fig:workflow-flowchart} gives the project flow.  The upper path is the main no-calibration workflow: start from the 19-site bond graph, construct the signed weighted-RVB initializer, refine it with edge-colored Heisenberg-HVA layers, and evaluate energy, fidelity, and correlation diagnostics.  The lower path is the reference workflow: exact diagonalization supplies $E_0$ and $\psi_{\rm exact}$, while calibration scans are used as diagnostic reference states and as design feedback for future local HVA blocks.
+Figure~\ref{fig:workflow-flowchart} gives the project flow as four numbered steps: define the fixed 19-site Kagome target Hamiltonian, construct the signed weighted-RVB initializer, refine it with edge-colored Heisenberg-HVA layers, and evaluate energy, fidelity, and correlation diagnostics.  The support boxes clarify what is used for interpretation: exact diagonalization supplies $E_0$ and $\psi_{\rm exact}$, while calibration scans are treated only as diagnostic reference states and design feedback for future local HVA blocks.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{workflow_flowchart.png}
-\caption{Project flowchart.  The main proof-of-concept keeps the target Hamiltonian fixed and improves the variational state through weighted-RVB initialization followed by Heisenberg-HVA refinement.  Exact diagonalization provides the benchmark, and calibration scans provide reference-state and ansatz-design clues rather than replacing the no-calibration workflow.}
+\caption{Project flowchart.  The numbered boxes are the actual no-calibration workflow: fixed target Hamiltonian, weighted-RVB starting state, Heisenberg-HVA refinement, and exact-state evaluation.  Exact diagonalization provides the benchmark.  Calibration scans provide reference-state and ansatz-design clues, not a replacement for the no-calibration workflow.}
 \label{fig:workflow-flowchart}
 \end{figure}
 

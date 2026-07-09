@@ -336,43 +336,80 @@ def plot_calibration_scatter(final_rows: list[dict[str, str]], output: Path, *, 
 
 
 def plot_workflow_flowchart(output: Path) -> None:
-    fig, ax = plt.subplots(figsize=(11.2, 5.6))
-    ax.set_xlim(0, 12.4)
-    ax.set_ylim(0, 6)
+    fig, ax = plt.subplots(figsize=(12.0, 5.9))
+    ax.set_xlim(0, 12)
+    ax.set_ylim(0, 6.2)
     ax.axis("off")
 
-    def add_box(
-        xy: tuple[float, float],
-        size: tuple[float, float],
-        text: str,
+    def add_step_box(
+        x: float,
+        y: float,
+        number: str,
+        title: str,
+        detail: str,
         *,
+        width: float = 2.55,
+        height: float = 1.35,
         facecolor: str,
-        edgecolor: str = "#2f3b46",
-        fontsize: int = 10,
     ) -> tuple[float, float, float, float]:
-        x, y = xy
-        w, h = size
         box = FancyBboxPatch(
             (x, y),
-            w,
-            h,
-            boxstyle="round,pad=0.035,rounding_size=0.08",
-            linewidth=1.4,
-            edgecolor=edgecolor,
+            width,
+            height,
+            boxstyle="round,pad=0.045,rounding_size=0.05",
+            linewidth=1.35,
+            edgecolor="#24313f",
             facecolor=facecolor,
         )
         ax.add_patch(box)
+        ax.text(x + 0.18, y + height - 0.26, number, ha="left", va="top", fontsize=10.5, fontweight="bold", color="#111827")
         ax.text(
-            x + w / 2,
-            y + h / 2,
-            text,
-            ha="center",
-            va="center",
-            fontsize=fontsize,
+            x + 0.18,
+            y + height - 0.58,
+            title,
+            ha="left",
+            va="top",
+            fontsize=10.5,
+            fontweight="bold",
             color="#17212b",
+        )
+        ax.text(
+            x + 0.18,
+            y + height - 0.92,
+            detail,
+            ha="left",
+            va="top",
+            fontsize=8.7,
+            color="#374151",
             linespacing=1.18,
         )
-        return (x, y, w, h)
+        return (x, y, width, height)
+
+    def add_note_box(
+        x: float,
+        y: float,
+        title: str,
+        detail: str,
+        *,
+        width: float,
+        height: float,
+        facecolor: str,
+        dashed: bool = False,
+    ) -> tuple[float, float, float, float]:
+        box = FancyBboxPatch(
+            (x, y),
+            width,
+            height,
+            boxstyle="round,pad=0.04,rounding_size=0.05",
+            linewidth=1.2,
+            linestyle="--" if dashed else "-",
+            edgecolor="#4b5563",
+            facecolor=facecolor,
+        )
+        ax.add_patch(box)
+        ax.text(x + 0.18, y + height - 0.27, title, ha="left", va="top", fontsize=9.5, fontweight="bold", color="#111827")
+        ax.text(x + 0.18, y + height - 0.62, detail, ha="left", va="top", fontsize=8.4, color="#374151", linespacing=1.16)
+        return (x, y, width, height)
 
     def right(box: tuple[float, float, float, float]) -> tuple[float, float]:
         x, y, w, h = box
@@ -390,7 +427,13 @@ def plot_workflow_flowchart(output: Path) -> None:
         x, y, w, _ = box
         return (x + w / 2, y)
 
-    def arrow(start: tuple[float, float], end: tuple[float, float], *, color: str = "#384a5c") -> None:
+    def arrow(
+        start: tuple[float, float],
+        end: tuple[float, float],
+        *,
+        color: str = "#334155",
+        dashed: bool = False,
+    ) -> None:
         ax.add_patch(
             FancyArrowPatch(
                 start,
@@ -399,72 +442,98 @@ def plot_workflow_flowchart(output: Path) -> None:
                 mutation_scale=13,
                 linewidth=1.5,
                 color=color,
+                linestyle="--" if dashed else "-",
                 shrinkA=5,
                 shrinkB=5,
             )
         )
 
     ax.text(
-        0.3,
-        5.55,
-        "Project workflow",
+        0.25,
+        5.72,
+        "How the project works",
         fontsize=15,
         fontweight="bold",
         color="#17212b",
     )
     ax.text(
-        0.3,
-        5.18,
-        "Main route keeps the target Hamiltonian fixed; calibration scans are used only as design clues.",
+        0.25,
+        5.36,
+        "The main result changes the trial state, not the target Hamiltonian.",
         fontsize=9.5,
         color="#4b5563",
     )
+    ax.text(0.25, 4.93, "MAIN WORKFLOW", fontsize=8.8, fontweight="bold", color="#475569")
 
-    graph = add_box((0.35, 3.55), (2.05, 0.95), "19-site Kagome\nbond graph", facecolor="#e8f1fb")
-    dimers = add_box((2.85, 3.55), (2.05, 0.95), "54 maximum\ndimer coverings", facecolor="#eaf7ed")
-    rvb = add_box((5.35, 3.55), (2.05, 0.95), "Signed weighted\nRVB initializer", facecolor="#eaf7ed")
-    hva = add_box((7.65, 3.55), (2.05, 0.95), "Edge-colored\nHeisenberg HVA", facecolor="#fff3d8")
-    diagnostics = add_box(
-        (10.25, 3.4),
-        (1.75, 1.25),
-        "Energy\nFidelity\nCorrelations",
-        facecolor="#f3e8ff",
-        fontsize=9.5,
+    target = add_step_box(
+        0.25,
+        3.45,
+        "1",
+        "Target problem",
+        "19-site Kagome graph\nuniform Heisenberg H",
+        facecolor="#f8fafc",
+    )
+    rvb = add_step_box(
+        3.10,
+        3.45,
+        "2",
+        "Starting state",
+        "signed weighted-RVB\nfrom 54 dimer coverings",
+        facecolor="#f8fafc",
+    )
+    hva = add_step_box(
+        5.95,
+        3.45,
+        "3",
+        "Circuit refinement",
+        "edge-colored Heisenberg-HVA\nwith p = 1, 2, 3, 4",
+        facecolor="#f8fafc",
+    )
+    evaluate = add_step_box(
+        8.80,
+        3.45,
+        "4",
+        "Evaluation",
+        "energy, fidelity,\nbond correlations",
+        facecolor="#f8fafc",
     )
 
-    exact = add_box((0.85, 1.55), (2.4, 0.95), "Exact fixed-Sz\nbenchmark", facecolor="#f2f4f7")
-    compare = add_box(
-        (4.0, 1.55),
-        (2.6, 0.95),
-        "Compare to\nE0 and psi_exact",
-        facecolor="#f2f4f7",
-    )
-    calib = add_box(
-        (7.25, 1.55),
-        (2.65, 0.95),
-        "Calibration scans\nas reference states",
-        facecolor="#fdecec",
-    )
-    next_step = add_box(
-        (10.05, 0.65),
-        (1.9, 1.15),
-        "Next: local\ntriangle/bond\nHVA blocks",
-        facecolor="#fdecec",
-        fontsize=9.2,
-    )
-
-    for first, second in [(graph, dimers), (dimers, rvb), (rvb, hva), (hva, diagnostics)]:
+    for first, second in [(target, rvb), (rvb, hva), (hva, evaluate)]:
         arrow(right(first), left(second))
 
-    arrow(bottom(graph), top(exact))
-    arrow(right(exact), left(compare))
-    arrow(bottom(diagnostics), top(compare))
-    arrow(right(compare), left(calib))
-    arrow(right(calib), left(next_step), color="#9b2c2c")
-    arrow(top(next_step), bottom(hva), color="#9b2c2c")
+    ax.text(0.25, 2.36, "REFERENCE AND NEXT STEP", fontsize=8.8, fontweight="bold", color="#475569")
+    exact = add_note_box(
+        8.80,
+        1.25,
+        "Exact benchmark",
+        "Sparse diagonalization gives\nE0 and psi_exact for step 4.",
+        width=2.55,
+        height=1.05,
+        facecolor="#f1f5f9",
+    )
+    calibration = add_note_box(
+        5.95,
+        1.10,
+        "Calibration scans",
+        "Modified-Hamiltonian exact states\nidentify useful triangles/bonds.\nThey are design clues, not the claim.",
+        width=2.55,
+        height=1.35,
+        facecolor="#f1f5f9",
+        dashed=True,
+    )
 
-    ax.text(7.98, 2.72, "same target Hamiltonian", fontsize=8.5, color="#4b5563")
-    ax.text(9.88, 2.25, "design feedback", fontsize=8.5, color="#9b2c2c")
+    arrow(top(exact), bottom(evaluate), color="#64748b")
+    arrow(top(calibration), bottom(hva), color="#64748b", dashed=True)
+    ax.text(6.42, 2.60, "future block design", fontsize=8.2, color="#64748b")
+    ax.text(9.27, 2.54, "compare against exact", fontsize=8.2, color="#64748b")
+
+    ax.text(
+        0.25,
+        0.55,
+        "Current interpretation: weighted-RVB gives the large improvement; HVA gives a smaller no-calibration refinement; calibration scans suggest what to try next.",
+        fontsize=8.9,
+        color="#334155",
+    )
 
     fig.tight_layout()
     fig.savefig(output, dpi=180)
