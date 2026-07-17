@@ -452,8 +452,8 @@ def plot_workflow_flowchart(output: Path) -> None:
 
 
 def plot_ansatz_circuit_schematic(output: Path) -> None:
-    fig, ax = plt.subplots(figsize=(10.8, 3.85))
-    ax.set_xlim(0, 10.8)
+    fig, ax = plt.subplots(figsize=(11.5, 3.85))
+    ax.set_xlim(0, 11.5)
     ax.set_ylim(0, 3.85)
     ax.axis("off")
 
@@ -486,10 +486,24 @@ def plot_ansatz_circuit_schematic(output: Path) -> None:
         if subtitle:
             ax.text(x + w / 2, y + 0.28 * h, subtitle, ha="center", va="center", fontsize=7.2)
 
+    def input_box(x: float, y: float) -> None:
+        patch = FancyBboxPatch(
+            (x, y),
+            1.42,
+            0.86,
+            boxstyle="round,pad=0.025,rounding_size=0.03",
+            linewidth=1.0,
+            edgecolor="black",
+            facecolor="#fff7ed",
+        )
+        ax.add_patch(patch)
+        ax.text(x + 0.71, y + 0.55, "weighted-RVB\ninitializer", ha="center", va="center", fontsize=7.7)
+        ax.text(x + 0.71, y + 0.23, r"$|\psi_{\rm RVB}\rangle$", ha="center", va="center", fontsize=8.6)
+
     def layer_box(x: float, y: float, label: str, layer_index: str) -> None:
         outer = FancyBboxPatch(
             (x, y),
-            3.25,
+            3.05,
             0.86,
             boxstyle="round,pad=0.025,rounding_size=0.03",
             linewidth=1.0,
@@ -499,11 +513,11 @@ def plot_ansatz_circuit_schematic(output: Path) -> None:
         ax.add_patch(outer)
         ax.text(x + 0.18, y + 0.66, label, ha="left", va="center", fontsize=8.2, fontweight="bold")
         for color_index in range(4):
-            gx = x + 0.20 + color_index * 0.74
+            gx = x + 0.18 + color_index * 0.68
             block(
                 gx,
                 y + 0.12,
-                0.56,
+                0.52,
                 0.42,
                 rf"$G_{color_index}$",
                 rf"$\theta_{{{layer_index},{color_index}}}$",
@@ -524,16 +538,16 @@ def plot_ansatz_circuit_schematic(output: Path) -> None:
     )
 
     y = 1.88
-    ax.text(0.42, y + 0.43, r"$|\psi_{\rm RVB}\rangle$", fontsize=9.0, ha="center", va="center")
-    layer_box(1.03, y, "Layer 1", "1")
-    ax.text(4.86, y + 0.43, r"$\cdots$", fontsize=13, ha="center", va="center")
-    layer_box(5.47, y, "Layer p", "p")
-    ax.text(9.82, y + 0.43, r"$|\psi_p\rangle$", fontsize=9.0, ha="center", va="center")
+    input_box(0.28, y)
+    layer_box(2.05, y, "Layer 1", "1")
+    ax.text(5.55, y + 0.43, r"$\cdots$", fontsize=13, ha="center", va="center")
+    layer_box(6.10, y, "Layer p", "p")
+    ax.text(10.55, y + 0.43, r"$|\psi_p\rangle$", fontsize=9.0, ha="center", va="center")
 
-    arrow(0.80, y + 0.43, 1.03, y + 0.43)
-    arrow(4.28, y + 0.43, 4.62, y + 0.43)
-    arrow(5.08, y + 0.43, 5.47, y + 0.43)
-    arrow(8.72, y + 0.43, 9.48, y + 0.43)
+    arrow(1.70, y + 0.43, 2.05, y + 0.43)
+    arrow(5.10, y + 0.43, 5.35, y + 0.43)
+    arrow(5.75, y + 0.43, 6.10, y + 0.43)
+    arrow(9.15, y + 0.43, 10.22, y + 0.43)
 
     ax.text(0.20, 1.30, "One color block", fontsize=9.0, fontweight="bold")
     ax.text(
@@ -546,8 +560,8 @@ def plot_ansatz_circuit_schematic(output: Path) -> None:
     qi_y, qj_y = 0.78, 0.36
     ax.text(0.45, qi_y, r"$q_i$", fontsize=8.5, ha="right", va="center")
     ax.text(0.45, qj_y, r"$q_j$", fontsize=8.5, ha="right", va="center")
-    ax.plot([0.55, 9.75], [qi_y, qi_y], color="black", linewidth=0.9)
-    ax.plot([0.55, 9.75], [qj_y, qj_y], color="black", linewidth=0.9)
+    ax.plot([0.55, 10.35], [qi_y, qi_y], color="black", linewidth=0.9)
+    ax.plot([0.55, 10.35], [qj_y, qj_y], color="black", linewidth=0.9)
     gate_xs = [1.15, 2.25, 3.35]
     gate_labels = [r"$R_{XX}(2\theta)$", r"$R_{YY}(2\theta)$", r"$R_{ZZ}(2\theta)$"]
     for gx, glabel in zip(gate_xs, gate_labels):

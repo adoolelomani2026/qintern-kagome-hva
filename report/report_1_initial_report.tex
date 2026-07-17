@@ -5,6 +5,7 @@
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage{array}
+\usepackage{float}
 \usepackage{xcolor}
 \usepackage[hidelinks]{hyperref}
 
@@ -101,19 +102,20 @@ The current workflow has two main stages.
 
 \textbf{Stage 2: edge-colored Heisenberg-HVA refinement.}  The 30 graph bonds are partitioned into four disjoint edge-color groups.  Within each group, gates act on disjoint bonds and can be applied in parallel.  This follows the broader variational quantum eigensolver and hardware-efficient ansatz philosophy, but uses Heisenberg interaction gates matched to the model \cite{peruzzo2014,kandala2017}.  A depth-$p$ ansatz therefore uses only $4p$ HVA parameters:
 \[
-U_p=\prod_{\ell=1}^{p}\prod_{c=1}^{4}\prod_{(i,j)\in E_c}
+U_p=\prod_{\ell=1}^{p}\prod_{c=0}^{3}\prod_{(i,j)\in E_c}
 \exp[-i\theta_{\ell,c}(X_iX_j+Y_iY_j+Z_iZ_j)].
 \]
-For the current best no-calibration run, $p=4$, so the HVA refinement uses 16 parameters.
 
-Figure~\ref{fig:ansatz-circuit} shows the actual circuit structure used for the HVA refinement.  Each color block $G_c$ contains disjoint two-qubit Heisenberg gates, and each Heisenberg gate is implemented in Qiskit as \texttt{RXX}$(2\theta)$, \texttt{RYY}$(2\theta)$, and \texttt{RZZ}$(2\theta)$ on the same bond.  The source implementation is \texttt{src/kagome\_heisenberg\_poc.py::build\_heisenberg\_ansatz}; a compact written version is included in \texttt{docs/ansatz\_circuit.md}.
+Figure~\ref{fig:ansatz-circuit} shows the circuit structure used for the HVA refinement.  The source implementation is in \path{src/kagome_heisenberg_poc.py}, in the function \texttt{build\_heisenberg\_ansatz}; a compact written version is included in \path{docs/ansatz_circuit.md}.
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 \centering
 \includegraphics[width=\linewidth]{ansatz_circuit_schematic.png}
-\caption{Ansatz circuit used after weighted-RVB initialization.  A depth-$p$ HVA applies four edge-color blocks per layer.  Each block uses one shared parameter and applies Qiskit two-qubit Pauli rotations on every disjoint bond in that color group.}
+\caption{Ansatz circuit used after weighted-RVB initialization.  A depth-$p$ HVA applies four edge-color blocks per layer.  Each block uses one shared parameter and applies Qiskit two-qubit Pauli rotations on every disjoint bond in that color group.  The weighted-RVB initializer is represented as an input state block in this initial report; a hardware-preparable RVB state-preparation circuit is future work.}
 \label{fig:ansatz-circuit}
 \end{figure}
+
+\textbf{Ansatz circuit details.}  The ansatz circuit used after weighted-RVB initialization is an edge-colored Heisenberg-HVA.  A depth-$p$ circuit contains $p$ repeated layers, and each layer contains four edge-color blocks.  Within a block, the bonds are disjoint, so the corresponding two-qubit Heisenberg interactions can be applied in parallel.  The depth-$p$ circuit therefore has $4p$ variational parameters.  For the current best run, $p=4$, giving 16 HVA parameters.  Each two-qubit Heisenberg interaction is implemented as \texttt{RXX}$(2\theta)$, \texttt{RYY}$(2\theta)$, and \texttt{RZZ}$(2\theta)$.  Qiskit's Pauli-rotation convention uses the doubled angle because \texttt{RXX}$(\phi)=\exp[-i\phi XX/2]$, and similarly for \texttt{RYY} and \texttt{RZZ}.  One HVA layer applies 30 Heisenberg bond gates, equivalent to 90 two-qubit Pauli-rotation gates if decomposed into \texttt{RXX}/\texttt{RYY}/\texttt{RZZ}.  The $p=4$ run therefore uses 120 Heisenberg bond gates, or 360 Pauli-rotation gates, controlled by only 16 shared color-layer parameters.
 
 \textbf{Why this is a reasonable first route.}  The ansatz is physically matched to the Hamiltonian because every two-qubit gate is a Heisenberg interaction.  It also avoids immediately relying on Hamiltonian calibration.  That keeps the scientific question clean: how far can a better initial state plus physically structured circuit layers go against the original target Hamiltonian?
 

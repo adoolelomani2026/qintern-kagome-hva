@@ -26,6 +26,8 @@ replacement for Hamiltonian calibration.
 Project context: QIntern 2026 project `qi26_09`, mentored by Dr. Muhammad
 Ahsan through QWorld Association, QResearch Department.
 
+Repository: https://github.com/adoolelomani2026/qintern-kagome-hva
+
 Ahsan reference: M. Ahsan, "Utility-scale Experimental Quantum Computation with
 Hardware Efficient Ansatze and Calibrated Hamiltonian," ACM Transactions on
 Quantum Computing (2026), doi:10.1145/3815786.
