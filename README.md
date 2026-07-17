@@ -36,12 +36,17 @@ Quantum Computing (2026), doi:10.1145/3815786.
 
 The HVA refinement circuit is documented explicitly in
 [`docs/ansatz_circuit.md`](docs/ansatz_circuit.md), and the report includes the
-schematic `figures/ansatz_circuit_schematic.png`.
+block-level schematic `figures/ansatz_circuit_schematic.png`.
 
 In Qiskit form, each two-qubit Heisenberg interaction is implemented as
 `rxx(2*theta)`, `ryy(2*theta)`, and `rzz(2*theta)` on the same bond. The
 19-site HVA uses four edge-color groups, one shared parameter per color per
 layer, so the reported `p=4` circuit has 16 HVA parameters.
+
+The schematic is intentionally block-level rather than a full 19-wire
+gate-level dump. A full `p=4` diagram would contain 120 Heisenberg bond gates,
+or 360 `RXX`/`RYY`/`RZZ` rotations, and is omitted from the main report for
+readability.
 
 ## Provenance And Scope
 

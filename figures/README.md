@@ -13,9 +13,12 @@ RVB-to-HVA improvement is visible at presentation scale.
 weighted-RVB initializer, Heisenberg-HVA refinement, exact diagnostics, and
 calibration-informed future circuit design.
 
-`ansatz_circuit_schematic.png` shows the edge-colored Heisenberg-HVA circuit
-used after weighted-RVB initialization, including the Qiskit two-qubit
-decomposition into `RXX(2theta)`, `RYY(2theta)`, and `RZZ(2theta)`.
+`ansatz_circuit_schematic.png` is a block-level edge-colored Heisenberg-HVA
+circuit schematic used after weighted-RVB initialization. It shows the layer
+structure, the four color blocks per layer, and the Qiskit two-qubit
+decomposition into `RXX(2theta)`, `RYY(2theta)`, and `RZZ(2theta)`. The full
+19-qubit gate-level `p=4` circuit is omitted from the main report because it
+would contain 120 Heisenberg bond gates, or 360 Pauli-rotation gates.
 
 Depth plots:
 

@@ -3,6 +3,12 @@
 This page records the circuit ansatz used for the reported weighted-RVB + HVA
 results.
 
+The report figure is a block-level circuit schematic. It shows the ansatz
+architecture without drawing every qubit wire and every elementary gate. A full
+19-qubit gate-level diagram for the reported `p=4` run would contain 120
+Heisenberg bond gates, or 360 `RXX`/`RYY`/`RZZ` rotations, so it is omitted from
+the main report for readability.
+
 ## State Prepared
 
 The reported state has the form

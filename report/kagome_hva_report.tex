@@ -193,7 +193,7 @@ is implemented as \texttt{RXX}$(2\theta)$, \texttt{RYY}$(2\theta)$, and \texttt{
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{ansatz_circuit_schematic.png}
-\caption{Edge-colored Heisenberg-HVA ansatz circuit.  The weighted-RVB initializer is followed by repeated color blocks $G_c(\theta_{\ell,c})$.  Each color block is a product of disjoint two-qubit Heisenberg interactions, decomposed into Qiskit Pauli rotation gates $R_{XX}(2\theta)$, $R_{YY}(2\theta)$, and $R_{ZZ}(2\theta)$.}
+\caption{Block-level edge-colored Heisenberg-HVA ansatz circuit.  The weighted-RVB initializer is followed by repeated color blocks $G_c(\theta_{\ell,c})$.  Each $G_c$ block represents several parallel two-qubit Heisenberg interactions on disjoint bonds, decomposed into Qiskit Pauli rotation gates $R_{XX}(2\theta)$, $R_{YY}(2\theta)$, and $R_{ZZ}(2\theta)$.  A full 19-qubit gate-level circuit would contain 120 Heisenberg bond gates, or 360 $R_{XX}/R_{YY}/R_{ZZ}$ rotations, for the $p=4$ run, so the full gate-level diagram is omitted for readability.}
 \label{fig:ansatz_circuit}
 \end{figure}
 

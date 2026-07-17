@@ -523,7 +523,13 @@ def plot_ansatz_circuit_schematic(output: Path) -> None:
                 rf"$\theta_{{{layer_index},{color_index}}}$",
             )
 
-    ax.text(0.20, 3.45, "Edge-colored Heisenberg-HVA ansatz circuit", fontsize=10.0, fontweight="bold")
+    ax.text(
+        0.20,
+        3.45,
+        "Block-level edge-colored Heisenberg-HVA ansatz circuit",
+        fontsize=10.0,
+        fontweight="bold",
+    )
     ax.text(
         0.20,
         3.18,

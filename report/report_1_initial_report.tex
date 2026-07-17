@@ -111,7 +111,7 @@ Figure~\ref{fig:ansatz-circuit} shows the circuit structure used for the HVA ref
 \begin{figure}[H]
 \centering
 \includegraphics[width=\linewidth]{ansatz_circuit_schematic.png}
-\caption{Ansatz circuit used after weighted-RVB initialization.  A depth-$p$ HVA applies four edge-color blocks per layer.  Each block uses one shared parameter and applies Qiskit two-qubit Pauli rotations on every disjoint bond in that color group.  The weighted-RVB initializer is represented as an input state block in this initial report; a hardware-preparable RVB state-preparation circuit is future work.}
+\caption{Block-level ansatz circuit used after weighted-RVB initialization.  A depth-$p$ HVA applies four edge-color blocks per layer.  Each $G_c$ block represents several parallel two-qubit Heisenberg interactions on disjoint bonds, and each interaction is decomposed into Qiskit Pauli rotations.  A full 19-qubit gate-level circuit would contain 120 Heisenberg bond gates, or 360 \texttt{RXX}/\texttt{RYY}/\texttt{RZZ} rotations, for the $p=4$ run, so it is omitted from the main report for readability.  The weighted-RVB initializer is represented as an input state block in this initial report; a hardware-preparable RVB state-preparation circuit is future work.}
 \label{fig:ansatz-circuit}
 \end{figure}
 
