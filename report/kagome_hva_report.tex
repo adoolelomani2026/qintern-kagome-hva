@@ -181,6 +181,19 @@ Starting from the weighted-RVB initializer, the edge-colored HVA applies Heisenb
 \end{equation}
 Thus the depth-$p$ edge-colored HVA has $4p$ parameters.  The reported serious run uses a Nelder-Mead optimization with $p=0,1,2,3,4$ cached in the current release artifacts.
 
+Figure~\ref{fig:ansatz_circuit} makes the circuit explicit.  One HVA layer consists of four edge-color blocks.  A color block applies the same variational angle to all disjoint bonds in that color group.  In Qiskit, each interaction
+\[
+\exp[-i\theta(X_iX_j+Y_iY_j+Z_iZ_j)]
+\]
+is implemented as \texttt{RXX}$(2\theta)$, \texttt{RYY}$(2\theta)$, and \texttt{RZZ}$(2\theta)$ on the same qubit pair.  The implementation is \texttt{src/kagome\_heisenberg\_poc.py::build\_heisenberg\_ansatz}, and a compact standalone circuit description is included in \texttt{docs/ansatz\_circuit.md}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{ansatz_circuit_schematic.png}
+\caption{Edge-colored Heisenberg-HVA ansatz circuit.  The weighted-RVB initializer is followed by repeated color blocks $G_c(\theta_{\ell,c})$.  Each color block is a product of disjoint two-qubit Heisenberg interactions, decomposed into Qiskit Pauli rotation gates $R_{XX}(2\theta)$, $R_{YY}(2\theta)$, and $R_{ZZ}(2\theta)$.}
+\label{fig:ansatz_circuit}
+\end{figure}
+
 \section{Diagnostics}
 
 The analysis tracks more than energy.  For each state, the repository computes fidelity, selected bipartite entropies, maximum site magnetization, bond correlations, and bond-correlation errors relative to the exact state.

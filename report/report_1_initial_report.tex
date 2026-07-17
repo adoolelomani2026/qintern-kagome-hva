@@ -106,6 +106,15 @@ U_p=\prod_{\ell=1}^{p}\prod_{c=1}^{4}\prod_{(i,j)\in E_c}
 \]
 For the current best no-calibration run, $p=4$, so the HVA refinement uses 16 parameters.
 
+Figure~\ref{fig:ansatz-circuit} shows the actual circuit structure used for the HVA refinement.  Each color block $G_c$ contains disjoint two-qubit Heisenberg gates, and each Heisenberg gate is implemented in Qiskit as \texttt{RXX}$(2\theta)$, \texttt{RYY}$(2\theta)$, and \texttt{RZZ}$(2\theta)$ on the same bond.  The source implementation is \texttt{src/kagome\_heisenberg\_poc.py::build\_heisenberg\_ansatz}; a compact written version is included in \texttt{docs/ansatz\_circuit.md}.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{ansatz_circuit_schematic.png}
+\caption{Ansatz circuit used after weighted-RVB initialization.  A depth-$p$ HVA applies four edge-color blocks per layer.  Each block uses one shared parameter and applies Qiskit two-qubit Pauli rotations on every disjoint bond in that color group.}
+\label{fig:ansatz-circuit}
+\end{figure}
+
 \textbf{Why this is a reasonable first route.}  The ansatz is physically matched to the Hamiltonian because every two-qubit gate is a Heisenberg interaction.  It also avoids immediately relying on Hamiltonian calibration.  That keeps the scientific question clean: how far can a better initial state plus physically structured circuit layers go against the original target Hamiltonian?
 
 Figure~\ref{fig:summary-dashboard} is a compact dashboard of the current proof-of-concept.  It is not a separate calculation; it summarizes the same exact-benchmark comparison reported in the tables and CSV files.

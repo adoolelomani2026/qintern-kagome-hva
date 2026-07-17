@@ -451,6 +451,104 @@ def plot_workflow_flowchart(output: Path) -> None:
     plt.close(fig)
 
 
+def plot_ansatz_circuit_schematic(output: Path) -> None:
+    fig, ax = plt.subplots(figsize=(10.8, 3.7))
+    ax.set_xlim(0, 10.8)
+    ax.set_ylim(0, 3.7)
+    ax.axis("off")
+
+    def arrow(x0: float, y0: float, x1: float, y1: float) -> None:
+        ax.add_patch(
+            FancyArrowPatch(
+                (x0, y0),
+                (x1, y1),
+                arrowstyle="-|>",
+                mutation_scale=10,
+                linewidth=1.0,
+                color="black",
+                shrinkA=3,
+                shrinkB=3,
+            )
+        )
+
+    def block(x: float, y: float, w: float, h: float, title: str, subtitle: str = "") -> None:
+        patch = FancyBboxPatch(
+            (x, y),
+            w,
+            h,
+            boxstyle="round,pad=0.02,rounding_size=0.02",
+            linewidth=1.0,
+            edgecolor="black",
+            facecolor="white",
+        )
+        ax.add_patch(patch)
+        ax.text(x + w / 2, y + 0.62 * h, title, ha="center", va="center", fontsize=8.6, fontweight="bold")
+        if subtitle:
+            ax.text(x + w / 2, y + 0.28 * h, subtitle, ha="center", va="center", fontsize=7.2)
+
+    ax.text(0.20, 3.30, "Edge-colored Heisenberg-HVA ansatz circuit", fontsize=10.0, fontweight="bold")
+    ax.text(
+        0.20,
+        3.03,
+        r"$|\psi_p(\theta)\rangle=\prod_{\ell=1}^{p}\prod_{c=0}^{3}G_c(\theta_{\ell,c})|\psi_{\rm RVB}\rangle$",
+        fontsize=8.4,
+    )
+
+    y = 2.15
+    ax.text(0.25, y + 0.25, r"$|\psi_{\rm RVB}\rangle$", fontsize=9.0, ha="center", va="center")
+    x_positions = [1.00, 2.32, 3.64, 4.96]
+    labels = ["color 0", "color 1", "color 2", "color 3"]
+    for x, label in zip(x_positions, labels):
+        block(x, y, 0.90, 0.55, rf"$G_{label[-1]}$", rf"$\theta_{{\ell,{label[-1]}}}$")
+    ax.text(6.10, y + 0.27, r"$\cdots$", fontsize=13, ha="center", va="center")
+    block(6.75, y, 0.90, 0.55, r"$G_0$", r"$\theta_{p,0}$")
+    block(8.02, y, 0.90, 0.55, r"$G_3$", r"$\theta_{p,3}$")
+    ax.text(9.95, y + 0.25, r"$|\psi_p\rangle$", fontsize=9.0, ha="center", va="center")
+
+    arrow(0.47, y + 0.27, 0.98, y + 0.27)
+    for x0, x1 in [(1.90, 2.32), (3.22, 3.64), (4.54, 4.96), (5.86, 6.75), (7.65, 8.02), (8.92, 9.62)]:
+        arrow(x0, y + 0.27, x1, y + 0.27)
+
+    ax.text(0.20, 1.30, "One color block", fontsize=9.0, fontweight="bold")
+    ax.text(
+        1.65,
+        1.30,
+        r"$G_c(\theta)=\prod_{(i,j)\in E_c}\exp[-i\theta(XX+YY+ZZ)]$",
+        fontsize=8.2,
+    )
+
+    qi_y, qj_y = 0.78, 0.36
+    ax.text(0.45, qi_y, r"$q_i$", fontsize=8.5, ha="right", va="center")
+    ax.text(0.45, qj_y, r"$q_j$", fontsize=8.5, ha="right", va="center")
+    ax.plot([0.55, 9.75], [qi_y, qi_y], color="black", linewidth=0.9)
+    ax.plot([0.55, 9.75], [qj_y, qj_y], color="black", linewidth=0.9)
+    gate_xs = [1.15, 2.25, 3.35]
+    gate_labels = [r"$R_{XX}(2\theta)$", r"$R_{YY}(2\theta)$", r"$R_{ZZ}(2\theta)$"]
+    for gx, glabel in zip(gate_xs, gate_labels):
+        rect = FancyBboxPatch(
+            (gx, qj_y - 0.16),
+            0.86,
+            qi_y - qj_y + 0.32,
+            boxstyle="round,pad=0.015,rounding_size=0.015",
+            linewidth=1.0,
+            edgecolor="black",
+            facecolor="white",
+        )
+        ax.add_patch(rect)
+        ax.text(gx + 0.43, (qi_y + qj_y) / 2, glabel, ha="center", va="center", fontsize=7.4)
+    ax.text(
+        4.65,
+        0.56,
+        "applied to every disjoint bond in the color group; different colors are applied sequentially",
+        fontsize=7.8,
+        va="center",
+    )
+
+    fig.tight_layout()
+    fig.savefig(output, dpi=180)
+    plt.close(fig)
+
+
 def main() -> None:
     results_dir = PROJECT_ROOT / "results"
     figures_dir = PROJECT_ROOT / "figures"
@@ -510,6 +608,7 @@ def main() -> None:
     plot_calibration_scatter(final_rows, figures_dir / "calibration_energy_vs_fidelity.png")
     plot_calibration_scatter(final_rows, figures_dir / "calibration_energy_vs_fidelity_zoom.png", zoom=True)
     plot_workflow_flowchart(figures_dir / "workflow_flowchart.png")
+    plot_ansatz_circuit_schematic(figures_dir / "ansatz_circuit_schematic.png")
     print(f"Wrote figures to {figures_dir}")
 
 

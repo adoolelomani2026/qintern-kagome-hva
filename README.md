@@ -30,6 +30,17 @@ Ahsan reference: M. Ahsan, "Utility-scale Experimental Quantum Computation with
 Hardware Efficient Ansatze and Calibrated Hamiltonian," ACM Transactions on
 Quantum Computing (2026), doi:10.1145/3815786.
 
+## Ansatz Circuit
+
+The HVA refinement circuit is documented explicitly in
+[`docs/ansatz_circuit.md`](docs/ansatz_circuit.md), and the report includes the
+schematic `figures/ansatz_circuit_schematic.png`.
+
+In Qiskit form, each two-qubit Heisenberg interaction is implemented as
+`rxx(2*theta)`, `ryy(2*theta)`, and `rzz(2*theta)` on the same bond. The
+19-site HVA uses four edge-color groups, one shared parameter per color per
+layer, so the reported `p=4` circuit has 16 HVA parameters.
+
 ## Provenance And Scope
 
 The original Ahsan Kagome-VQE material is used here as provenance and

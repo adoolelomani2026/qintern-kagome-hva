@@ -4,6 +4,7 @@ Main presentation figure:
 
 - `one_page_summary.png`
 - `workflow_flowchart.png`
+- `ansatz_circuit_schematic.png`
 
 The main comparison panel uses error vs exact rather than raw energy so the
 RVB-to-HVA improvement is visible at presentation scale.
@@ -11,6 +12,10 @@ RVB-to-HVA improvement is visible at presentation scale.
 `workflow_flowchart.png` summarizes the proof-of-concept flow: 19-site graph,
 weighted-RVB initializer, Heisenberg-HVA refinement, exact diagnostics, and
 calibration-informed future circuit design.
+
+`ansatz_circuit_schematic.png` shows the edge-colored Heisenberg-HVA circuit
+used after weighted-RVB initialization, including the Qiskit two-qubit
+decomposition into `RXX(2theta)`, `RYY(2theta)`, and `RZZ(2theta)`.
 
 Depth plots:
 
