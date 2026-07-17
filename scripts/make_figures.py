@@ -24,14 +24,14 @@ NUM_SITES = 19
 
 
 STATE_TO_FIGURE = {
-    "static_dimer": "bond_map_static_dimer.png",
-    "equal_rvb_54": "bond_map_equal_rvb.png",
-    "weighted_rvb_54": "bond_map_weighted_rvb.png",
-    "weighted_hva_p1": "bond_map_weighted_hva_p1.png",
-    "weighted_hva_p2": "bond_map_weighted_hva_p2.png",
-    "weighted_hva_p3": "bond_map_weighted_hva_p3.png",
-    "weighted_hva_p4": "bond_map_weighted_hva_p4.png",
-    "exact": "bond_map_exact.png",
+    "static_dimer": "bond_maps/bond_map_static_dimer.png",
+    "equal_rvb_54": "bond_maps/bond_map_equal_rvb.png",
+    "weighted_rvb_54": "bond_maps/bond_map_weighted_rvb.png",
+    "weighted_hva_p1": "bond_maps/bond_map_weighted_hva_p1.png",
+    "weighted_hva_p2": "bond_maps/bond_map_weighted_hva_p2.png",
+    "weighted_hva_p3": "bond_maps/bond_map_weighted_hva_p3.png",
+    "weighted_hva_p4": "bond_maps/bond_map_weighted_hva_p4.png",
+    "exact": "bond_maps/bond_map_exact.png",
 }
 
 
@@ -599,6 +599,8 @@ def main() -> None:
     results_dir = PROJECT_ROOT / "results"
     figures_dir = PROJECT_ROOT / "figures"
     figures_dir.mkdir(exist_ok=True)
+    for subdir in ("ansatz", "bond_maps", "calibration", "depth", "summary"):
+        (figures_dir / subdir).mkdir(exist_ok=True)
     bonds = load_bonds_csv(PROJECT_ROOT / "data" / "19site_bonds.csv")
     positions = force_layout(NUM_SITES, bonds)
     state_bonds = bond_rows_by_state(results_dir / "19site_bond_correlations_by_state.csv")
@@ -614,7 +616,7 @@ def main() -> None:
             bonds,
             diff,
             "weighted HVA p=2 minus exact",
-            figures_dir / "bond_map_error_p2_vs_exact.png",
+            figures_dir / "bond_maps/bond_map_error_p2_vs_exact.png",
             difference=True,
         )
 
@@ -630,18 +632,18 @@ def main() -> None:
                 bonds,
                 diff,
                 f"weighted HVA p={best_hva['depth']} minus exact",
-                figures_dir / "bond_map_error_best_hva_vs_exact.png",
+                figures_dir / "bond_maps/bond_map_error_best_hva_vs_exact.png",
                 difference=True,
             )
     depth_data = depth_rows(final_rows)
-    plot_depth_metric(depth_data, "energy", "Energy, unscaled Pauli", figures_dir / "energy_vs_hva_depth.png")
-    plot_depth_metric(depth_data, "error", "Error vs exact", figures_dir / "error_vs_hva_depth.png")
-    plot_depth_metric(depth_data, "fidelity", "Fidelity", figures_dir / "fidelity_vs_hva_depth.png")
-    plot_depth_metric(depth_data, "magnetization", "Max |<Sz>|", figures_dir / "magnetization_vs_hva_depth.png")
-    plot_depth_metric(depth_data, "entropy", "Midcut entropy", figures_dir / "entropy_vs_hva_depth.png")
+    plot_depth_metric(depth_data, "energy", "Energy, unscaled Pauli", figures_dir / "depth/energy_vs_hva_depth.png")
+    plot_depth_metric(depth_data, "error", "Error vs exact", figures_dir / "depth/error_vs_hva_depth.png")
+    plot_depth_metric(depth_data, "fidelity", "Fidelity", figures_dir / "depth/fidelity_vs_hva_depth.png")
+    plot_depth_metric(depth_data, "magnetization", "Max |<Sz>|", figures_dir / "depth/magnetization_vs_hva_depth.png")
+    plot_depth_metric(depth_data, "entropy", "Midcut entropy", figures_dir / "depth/entropy_vs_hva_depth.png")
     plot_spin_distance_profile(
         results_dir / "19site_spin_distance_profile.csv",
-        figures_dir / "spin_distance_profile.png",
+        figures_dir / "depth/spin_distance_profile.png",
     )
     plot_one_page_summary(
         final_rows,
@@ -649,12 +651,12 @@ def main() -> None:
         positions,
         bonds,
         state_bonds,
-        figures_dir / "one_page_summary.png",
+        figures_dir / "summary/one_page_summary.png",
     )
-    plot_calibration_scatter(final_rows, figures_dir / "calibration_energy_vs_fidelity.png")
-    plot_calibration_scatter(final_rows, figures_dir / "calibration_energy_vs_fidelity_zoom.png", zoom=True)
-    plot_workflow_flowchart(figures_dir / "workflow_flowchart.png")
-    plot_ansatz_circuit_schematic(figures_dir / "ansatz_circuit_schematic.png")
+    plot_calibration_scatter(final_rows, figures_dir / "calibration/calibration_energy_vs_fidelity.png")
+    plot_calibration_scatter(final_rows, figures_dir / "calibration/calibration_energy_vs_fidelity_zoom.png", zoom=True)
+    plot_workflow_flowchart(figures_dir / "summary/workflow_flowchart.png")
+    plot_ansatz_circuit_schematic(figures_dir / "ansatz/ansatz_circuit_schematic.png")
     print(f"Wrote figures to {figures_dir}")
 
 

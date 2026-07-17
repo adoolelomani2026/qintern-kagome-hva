@@ -28,5 +28,5 @@ pdflatex -interaction=nonstopmode -halt-on-error -output-directory=report report
 latexmk -pdf -interaction=nonstopmode -halt-on-error -outdir=report report/kagome_hva_report.tex
 ```
 
-The report uses images from `figures/` via relative paths and does not require
-copying figure files into this directory.
+The report uses images from organized subfolders under `figures/` via relative
+paths and does not require copying figure files into this directory.

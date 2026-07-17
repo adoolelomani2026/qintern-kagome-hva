@@ -36,7 +36,7 @@ Quantum Computing (2026), doi:10.1145/3815786.
 
 The HVA refinement circuit is documented explicitly in
 [`docs/ansatz_circuit.md`](docs/ansatz_circuit.md), and the report includes the
-block-level schematic `figures/ansatz_circuit_schematic.png`.
+block-level schematic `figures/ansatz/ansatz_circuit_schematic.png`.
 
 In Qiskit form, each two-qubit Heisenberg interaction is implemented as
 `rxx(2*theta)`, `ryy(2*theta)`, and `rzz(2*theta)` on the same bond. The
@@ -290,30 +290,20 @@ also include:
   per-site energies against the Depenbrock DMRG benchmark and Ahsan's rounded
   19-site value
 
-Generated figures live in `figures/`:
+Generated figures live in organized subfolders under `figures/`:
 
-- `bond_map_static_dimer.png`
-- `bond_map_equal_rvb.png`
-- `bond_map_weighted_rvb.png`
-- `bond_map_weighted_hva_p1.png`
-- `bond_map_weighted_hva_p2.png`
-- `bond_map_exact.png`
-- `bond_map_error_p2_vs_exact.png`
-- `energy_vs_hva_depth.png`
-- `error_vs_hva_depth.png`
-- `fidelity_vs_hva_depth.png`
-- `magnetization_vs_hva_depth.png`
-- `entropy_vs_hva_depth.png`
-- `spin_distance_profile.png`
-- `calibration_energy_vs_fidelity.png`
-- `calibration_energy_vs_fidelity_zoom.png`
-- `one_page_summary.png`
+- `figures/ansatz/` - block-level ansatz schematic and full gate-level Qiskit views.
+- `figures/summary/` - workflow and compact presentation summary.
+- `figures/bond_maps/` - bond-correlation maps and HVA-vs-exact errors.
+- `figures/depth/` - energy, fidelity, entropy, magnetization, and spin-distance diagnostics.
+- `figures/calibration/` - calibration-reference scatter plots.
 
-`one_page_summary.png` uses error vs exact in its main comparison panel so the
-RVB-to-HVA improvement is visible on the presentation scale.
-`calibration_energy_vs_fidelity.png` reads all rows from
+`figures/summary/one_page_summary.png` uses error vs exact in its main
+comparison panel so the RVB-to-HVA improvement is visible on the presentation
+scale. `figures/calibration/calibration_energy_vs_fidelity.png` reads all rows from
 `results/19site_calibration_scan.csv`, not just the best-row comparison table,
-and uses a symlog x-axis. `calibration_energy_vs_fidelity_zoom.png` shows the
+and uses a symlog x-axis.
+`figures/calibration/calibration_energy_vs_fidelity_zoom.png` shows the
 high-fidelity low-error region on a linear scale.
 
 Spin-structure factor is not included because reliable geometric coordinates

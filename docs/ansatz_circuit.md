@@ -9,6 +9,12 @@ architecture without drawing every qubit wire and every elementary gate. A full
 Heisenberg bond gates, or 360 `RXX`/`RYY`/`RZZ` rotations, so it is omitted from
 the main report for readability.
 
+Figure files:
+
+- `figures/ansatz/ansatz_circuit_schematic.png`
+- `figures/ansatz/full_gate_level_hva_p1_qiskit.png`
+- `figures/ansatz/full_gate_level_hva_p4_qiskit.png`
+
 ## State Prepared
 
 The reported state has the form
