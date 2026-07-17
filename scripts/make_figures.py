@@ -452,9 +452,9 @@ def plot_workflow_flowchart(output: Path) -> None:
 
 
 def plot_ansatz_circuit_schematic(output: Path) -> None:
-    fig, ax = plt.subplots(figsize=(10.8, 3.7))
+    fig, ax = plt.subplots(figsize=(10.8, 3.85))
     ax.set_xlim(0, 10.8)
-    ax.set_ylim(0, 3.7)
+    ax.set_ylim(0, 3.85)
     ax.axis("off")
 
     def arrow(x0: float, y0: float, x1: float, y1: float) -> None:
@@ -486,28 +486,54 @@ def plot_ansatz_circuit_schematic(output: Path) -> None:
         if subtitle:
             ax.text(x + w / 2, y + 0.28 * h, subtitle, ha="center", va="center", fontsize=7.2)
 
-    ax.text(0.20, 3.30, "Edge-colored Heisenberg-HVA ansatz circuit", fontsize=10.0, fontweight="bold")
+    def layer_box(x: float, y: float, label: str, layer_index: str) -> None:
+        outer = FancyBboxPatch(
+            (x, y),
+            3.25,
+            0.86,
+            boxstyle="round,pad=0.025,rounding_size=0.03",
+            linewidth=1.0,
+            edgecolor="black",
+            facecolor="#f8fafc",
+        )
+        ax.add_patch(outer)
+        ax.text(x + 0.18, y + 0.66, label, ha="left", va="center", fontsize=8.2, fontweight="bold")
+        for color_index in range(4):
+            gx = x + 0.20 + color_index * 0.74
+            block(
+                gx,
+                y + 0.12,
+                0.56,
+                0.42,
+                rf"$G_{color_index}$",
+                rf"$\theta_{{{layer_index},{color_index}}}$",
+            )
+
+    ax.text(0.20, 3.45, "Edge-colored Heisenberg-HVA ansatz circuit", fontsize=10.0, fontweight="bold")
     ax.text(
         0.20,
-        3.03,
+        3.18,
         r"$|\psi_p(\theta)\rangle=\prod_{\ell=1}^{p}\prod_{c=0}^{3}G_c(\theta_{\ell,c})|\psi_{\rm RVB}\rangle$",
         fontsize=8.4,
     )
+    ax.text(
+        0.20,
+        2.93,
+        "Each layer contains all four edge-color blocks; the dots skip whole layers, not gates inside a layer.",
+        fontsize=7.8,
+    )
 
-    y = 2.15
-    ax.text(0.25, y + 0.25, r"$|\psi_{\rm RVB}\rangle$", fontsize=9.0, ha="center", va="center")
-    x_positions = [1.00, 2.32, 3.64, 4.96]
-    labels = ["color 0", "color 1", "color 2", "color 3"]
-    for x, label in zip(x_positions, labels):
-        block(x, y, 0.90, 0.55, rf"$G_{label[-1]}$", rf"$\theta_{{\ell,{label[-1]}}}$")
-    ax.text(6.10, y + 0.27, r"$\cdots$", fontsize=13, ha="center", va="center")
-    block(6.75, y, 0.90, 0.55, r"$G_0$", r"$\theta_{p,0}$")
-    block(8.02, y, 0.90, 0.55, r"$G_3$", r"$\theta_{p,3}$")
-    ax.text(9.95, y + 0.25, r"$|\psi_p\rangle$", fontsize=9.0, ha="center", va="center")
+    y = 1.88
+    ax.text(0.42, y + 0.43, r"$|\psi_{\rm RVB}\rangle$", fontsize=9.0, ha="center", va="center")
+    layer_box(1.03, y, "Layer 1", "1")
+    ax.text(4.86, y + 0.43, r"$\cdots$", fontsize=13, ha="center", va="center")
+    layer_box(5.47, y, "Layer p", "p")
+    ax.text(9.82, y + 0.43, r"$|\psi_p\rangle$", fontsize=9.0, ha="center", va="center")
 
-    arrow(0.47, y + 0.27, 0.98, y + 0.27)
-    for x0, x1 in [(1.90, 2.32), (3.22, 3.64), (4.54, 4.96), (5.86, 6.75), (7.65, 8.02), (8.92, 9.62)]:
-        arrow(x0, y + 0.27, x1, y + 0.27)
+    arrow(0.80, y + 0.43, 1.03, y + 0.43)
+    arrow(4.28, y + 0.43, 4.62, y + 0.43)
+    arrow(5.08, y + 0.43, 5.47, y + 0.43)
+    arrow(8.72, y + 0.43, 9.48, y + 0.43)
 
     ax.text(0.20, 1.30, "One color block", fontsize=9.0, fontweight="bold")
     ax.text(

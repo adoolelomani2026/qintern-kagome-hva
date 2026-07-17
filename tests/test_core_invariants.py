@@ -137,6 +137,50 @@ def test_qiskit_ansatz_energy_matches_numpy_small_patch() -> None:
     assert energy_qiskit == pytest.approx(energy_numpy, abs=1e-10)
 
 
+def test_qiskit_grouped_19site_ansatz_state_matches_numpy() -> None:
+    pytest.importorskip("qiskit")
+    from qiskit.quantum_info import Statevector
+
+    bonds, groups = load_bonds_with_groups_csv(PROJECT_ROOT / "data" / "19site_bonds.csv")
+    theta = np.linspace(-0.07, 0.09, 4)
+    circuit, params = build_heisenberg_ansatz(
+        19,
+        bonds,
+        layers=1,
+        parameterization="grouped",
+        initial_state="singlet_pairs",
+        bond_groups=groups,
+    )
+    assert len(params) == 4
+    assert dict(circuit.count_ops()) == {
+        "rxx": 30,
+        "ryy": 30,
+        "rzz": 30,
+        "x": 9,
+        "h": 9,
+        "cx": 9,
+        "z": 9,
+    }
+
+    assigned = circuit.assign_parameters(dict(zip(params, theta)), inplace=False)
+    state_qiskit = np.asarray(Statevector.from_instruction(assigned).data)
+    state_numpy = heisenberg_statevector_numpy(
+        19,
+        bonds,
+        layers=1,
+        parameters=theta,
+        parameterization="grouped",
+        initial_state="singlet_pairs",
+        bond_groups=groups,
+    )
+
+    overlap = np.vdot(state_numpy, state_qiskit)
+    fidelity = abs(overlap) ** 2
+    assert fidelity == pytest.approx(1.0, abs=1e-12)
+    state_qiskit_without_global_phase = state_qiskit / (overlap / abs(overlap))
+    np.testing.assert_allclose(state_qiskit_without_global_phase, state_numpy, atol=1e-12)
+
+
 def test_sector_hva_matches_full_hva_and_preserves_sector() -> None:
     bonds, groups = load_bonds_with_groups_csv(PROJECT_ROOT / "data" / "19site_bonds.csv")
     exact = load_sector_exact_result(PROJECT_ROOT / "results" / "19site_fixed_sz_exact_n9.npz")
